@@ -1,8 +1,7 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 import StarLogo from "../Icons/StarLogo";
 import ArrowrightLogo from "../Icons/ArrowrightLogo";
@@ -56,6 +55,7 @@ const MovieCard = ({ movie }) => {
 };
 
 export const Upcoming = () => {
+  const router = useRouter();
   const [movies, setMovies] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -89,19 +89,23 @@ export const Upcoming = () => {
     getMovies();
   }, []);
 
+  const navigateToUpcomingPage = () => {
+    router.push("/Upcoming");
+  };
+
   return (
     <section className="w-full px-17.5 pb-10">
       {/* Header */}
       <div className="my-8 mb-8.75 flex items-center justify-between">
         <h2 className="text-[28px] font-bold text-black">Upcoming</h2>
 
-        <Link
-          href="/upcoming"
+        <button
           className="flex items-center gap-2 text-sm text-[#4338ca] hover:underline"
+          onClick={navigateToUpcomingPage}
         >
           See more
           <ArrowrightLogo />
-        </Link>
+        </button>
       </div>
 
       {/* Loading */}

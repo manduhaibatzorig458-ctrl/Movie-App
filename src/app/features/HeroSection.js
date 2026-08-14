@@ -19,13 +19,13 @@ export const HeroSection = () => {
 
       <section className="relative h-160 w-full overflow-hidden">
         {/* Background Image */}
-        <Image
+        {/* <Image
           src="/movies/Wicked.png"
           alt="Wicked"
           fill
           priority
           className="object-cover"
-        />
+        /> */}
 
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/20 to-transparent" />

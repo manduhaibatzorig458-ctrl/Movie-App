@@ -10,6 +10,7 @@ import { Popular } from "./features/Popular";
 import { VectorLogo } from "./Icons/VectorLogo";
 import { useEffect, useState } from "react";
 
+
 export default function Main() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);

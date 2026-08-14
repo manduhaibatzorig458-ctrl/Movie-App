@@ -1,8 +1,7 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 import StarLogo from "../Icons/StarLogo";
 import ArrowrightLogo from "../Icons/ArrowrightLogo";
@@ -57,6 +56,7 @@ const MovieCard = ({ movie }) => {
 };
 
 export const TopRated = () => {
+  const router = useRouter();
   const [movies, setMovies] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -91,19 +91,22 @@ export const TopRated = () => {
     getMovies();
   }, []);
 
+  const navigateToTopRatedPage = () => {
+router.push("/TopRated")
+  }
+
   return (
     <section className="w-full px-17.5 pb-10">
       {/* Header */}
       <div className="my-8 mb-8.75 flex items-center justify-between">
         <h2 className="text-[28px] font-bold text-black">Top Rated</h2>
 
-        <Link
-          href="/top-rated"
-          className="flex items-center gap-2 text-sm text-[#4338ca] hover:underline"
-        >
+        <button  className="flex items-center gap-2 text-sm text-[#4338ca] hover:underline"
+        onClick={navigateToTopRatedPage}>
           See more
           <ArrowrightLogo />
-        </Link>
+        </button>
+
       </div>
 
       {/* Loading */}
@@ -125,3 +128,6 @@ export const TopRated = () => {
 };
 
 export default TopRated;
+
+
+
