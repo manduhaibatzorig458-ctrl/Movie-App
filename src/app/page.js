@@ -10,16 +10,6 @@ import { Popular } from "./features/Popular";
 import { VectorLogo } from "./Icons/VectorLogo";
 import { useEffect, useState } from "react";
 
-const url = "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1";
-const options = {
-  method: "GET",
-  headers: {
-    accept: "application/json",
-    Authorization:
-      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c",
-  },
-};
-
 export default function Main() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
