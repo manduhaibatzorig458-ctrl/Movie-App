@@ -15,9 +15,12 @@ const options = {
   },
 };
 
-const MovieCard = ({ movie }) => {
+const MovieCard = ({ movie, onClick }) => {
   return (
-    <div className="w-full overflow-hidden rounded-lg bg-[#f4f4f4]">
+    <div
+      onClick={onClick}
+      className="w-full cursor-pointer overflow-hidden rounded-lg bg-[#f4f4f4] transition hover:scale-[1.02]"
+    >
       {/* Poster */}
       <div className="aspect-2/3 w-full overflow-hidden bg-gray-200">
         <Image
@@ -85,7 +88,6 @@ export const Popular = ({ showSeeMore = true }) => {
           );
         }
 
-        // Нэг page-ээс 10 кино
         setMovies(data.results.slice(0, 10));
       } catch (error) {
         console.error("Popular Error:", error);
@@ -101,6 +103,11 @@ export const Popular = ({ showSeeMore = true }) => {
   // See more
   const navigateToPopularPage = () => {
     router.push("/Popular");
+  };
+
+  // Movie detail page
+  const navigateToMovieDetail = (movieId) => {
+    router.push(`/movie/${movieId}`);
   };
 
   // Next
@@ -127,13 +134,17 @@ export const Popular = ({ showSeeMore = true }) => {
     }
   };
 
+const handleMovieClick = (id) => {
+    router.push(`/movie/${id}`);
+  }  
+
   return (
     <section className="w-full px-17.5 pb-10">
       {/* Header */}
       <div className="my-8 mb-8.75 flex items-center justify-between">
         <h2 className="text-[28px] font-bold text-black">Popular</h2>
 
-        {/* Main page дээр л See more гарна */}
+        {/* See more */}
         {showSeeMore && (
           <button
             className="flex items-center gap-2 text-sm text-[#4338ca] hover:underline"
@@ -156,7 +167,11 @@ export const Popular = ({ showSeeMore = true }) => {
         <>
           <div className="grid grid-cols-5 gap-x-8 gap-y-8">
             {movies.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
+              <MovieCard
+                key={movie.id}
+                movie={movie}
+                onClick={() => handleMovieClick(movie.id)}
+              />
             ))}
           </div>
 
@@ -216,3 +231,10 @@ export const Popular = ({ showSeeMore = true }) => {
 };
 
 export default Popular;
+
+
+
+
+
+
+

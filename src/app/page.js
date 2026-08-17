@@ -6,6 +6,9 @@ import { Footer } from "./features/Footer";
 import { Upcoming } from "./features/Upcoming";
 import { TopRated } from "./features/TopRated";
 import { Popular } from "./features/Popular";
+ 
+import { MovieDetails } from "./features/MovieDetails"
+
 
 import { VectorLogo } from "./Icons/VectorLogo";
 import { useEffect, useState } from "react";
