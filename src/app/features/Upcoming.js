@@ -14,9 +14,10 @@ const options = {
   method: "GET",
   headers: {
     accept: "application/json",
-    Authorization: `Bearer YOUR_TMDB_BEARER_TOKEN`,
+    Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c`,
   },
 };
+
 
 const MovieCard = ({ movie, onClick }) => {
   return (
@@ -94,7 +95,7 @@ export const Upcoming = () => {
         );
 
         if (!response.ok) {
-          throw new Error(
+          throw Error(
             data.status_message ||
               "Failed to fetch upcoming movies"
           );
@@ -190,3 +191,4 @@ export const Upcoming = () => {
 };
 
 export default Upcoming;
+

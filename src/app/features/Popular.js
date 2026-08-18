@@ -11,7 +11,8 @@ const options = {
   method: "GET",
   headers: {
     accept: "application/json",
-    Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c`,
+    Authorization:
+      `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsImNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c`,
   },
 };
 
@@ -29,7 +30,7 @@ const MovieCard = ({ movie, onClick }) => {
               ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
               : "/movies/DearSanta.png"
           }
-          alt={movie.title}
+          alt={movie.title || "Movie poster"}
           width={250}
           height={350}
           className="block h-full w-full object-cover"
@@ -42,7 +43,11 @@ const MovieCard = ({ movie, onClick }) => {
         <div className="mb-2 flex items-center text-[14px] text-gray-700">
           <StarLogo />
 
-          <span>{movie.vote_average?.toFixed(1)}</span>
+          <span>
+            {movie.vote_average
+              ? movie.vote_average.toFixed(1)
+              : "N/A"}
+          </span>
 
           <span className="text-gray-500">/10</span>
         </div>
@@ -65,7 +70,13 @@ export const Popular = ({ showSeeMore = true }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // API page
+
+
+  
+  // =========================
+  // GET POPULAR MOVIES
+  // =========================
+
   useEffect(() => {
     const getMovies = async () => {
       try {
@@ -84,14 +95,17 @@ export const Popular = ({ showSeeMore = true }) => {
 
         if (!response.ok) {
           throw new Error(
-            data.status_message || "Failed to fetch popular movies",
+            data.status_message || "Failed to fetch popular movies"
           );
         }
 
         setMovies(data.results.slice(0, 10));
       } catch (error) {
         console.error("Popular Error:", error);
-        setError(error.message);
+
+        setError(
+          error.message || "Failed to fetch popular movies"
+        );
       } finally {
         setLoading(false);
       }
@@ -100,17 +114,28 @@ export const Popular = ({ showSeeMore = true }) => {
     getMovies();
   }, [page]);
 
-  // See more
+  // =========================
+  // SEE MORE
+  // =========================
+
   const navigateToPopularPage = () => {
     router.push("/Popular");
   };
 
-  // Movie detail page
-  const navigateToMovieDetail = (movieId) => {
+  // =========================
+  // MOVIE DETAIL
+  // =========================
+
+  const handleMovieClick = (movieId) => {
+    console.log("Clicked movie ID:", movieId);
+
     router.push(`/movie/${movieId}`);
   };
 
-  // Next
+  // =========================
+  // NEXT
+  // =========================
+
   const handleNext = () => {
     if (page < 5) {
       setPage(page + 1);
@@ -122,7 +147,10 @@ export const Popular = ({ showSeeMore = true }) => {
     }
   };
 
-  // Previous
+  // =========================
+  // PREVIOUS
+  // =========================
+
   const handlePrevious = () => {
     if (page > 1) {
       setPage(page - 1);
@@ -134,51 +162,83 @@ export const Popular = ({ showSeeMore = true }) => {
     }
   };
 
-const handleMovieClick = (id) => {
-    router.push(`/movie/${id}`);
-  }  
-
   return (
     <section className="w-full px-17.5 pb-10">
-      {/* Header */}
-      <div className="my-8 mb-8.75 flex items-center justify-between">
-        <h2 className="text-[28px] font-bold text-black">Popular</h2>
 
-        {/* See more */}
+      {/* =========================
+          HEADER
+      ========================= */}
+
+      <div className="my-8 mb-8.75 flex items-center justify-between">
+
+        <h2 className="text-[28px] font-bold text-black">
+          Popular
+        </h2>
+
+        {/* See More */}
+
         {showSeeMore && (
           <button
             className="flex items-center gap-2 text-sm text-[#4338ca] hover:underline"
             onClick={navigateToPopularPage}
           >
             See more
+
             <ArrowrightLogo />
           </button>
         )}
+
       </div>
 
-      {/* Loading */}
-      {loading && <p className="text-gray-500">Loading...</p>}
+      {/* =========================
+          LOADING
+      ========================= */}
 
-      {/* Error */}
-      {error && <p className="text-red-500">{error}</p>}
+      {loading && (
+        <p className="text-gray-500">
+          Loading...
+        </p>
+      )}
 
-      {/* Movies */}
+      {/* =========================
+          ERROR
+      ========================= */}
+
+      {error && (
+        <p className="text-red-500">
+          {error}
+        </p>
+      )}
+
+      {/* =========================
+          MOVIES
+      ========================= */}
+
       {!loading && !error && (
         <>
           <div className="grid grid-cols-5 gap-x-8 gap-y-8">
+
             {movies.map((movie) => (
               <MovieCard
                 key={movie.id}
                 movie={movie}
-                onClick={() => handleMovieClick(movie.id)}
+                onClick={() =>
+                  handleMovieClick(movie.id)
+                }
               />
             ))}
+
           </div>
 
-          {/* Pagination */}
+          {/* =========================
+              PAGINATION
+          ========================= */}
+
           {!showSeeMore && (
             <div className="mt-5 flex items-center justify-end gap-5 text-[12px]">
+
               {/* Previous */}
+
               <button
                 onClick={handlePrevious}
                 disabled={page === 1}
@@ -189,11 +249,16 @@ const handleMovieClick = (id) => {
                 }`}
               >
                 <span>‹</span>
-                <span>Previous</span>
+
+                <span>
+                  Previous
+                </span>
               </button>
 
-              {/* Page numbers */}
+              {/* Page Numbers */}
+
               <div className="flex items-center gap-3">
+
                 {[1, 2, 3, 4, 5].map((number) => (
                   <button
                     key={number}
@@ -207,9 +272,11 @@ const handleMovieClick = (id) => {
                     {number}
                   </button>
                 ))}
+
               </div>
 
               {/* Next */}
+
               <button
                 onClick={handleNext}
                 disabled={page === 5}
@@ -219,9 +286,15 @@ const handleMovieClick = (id) => {
                     : "text-gray-700 hover:text-black"
                 }`}
               >
-                <span>Next</span>
-                <span>›</span>
+                <span>
+                  Next
+                </span>
+
+                <span>
+                  ›
+                </span>
               </button>
+
             </div>
           )}
         </>
@@ -231,10 +304,3 @@ const handleMovieClick = (id) => {
 };
 
 export default Popular;
-
-
-
-
-
-
-
