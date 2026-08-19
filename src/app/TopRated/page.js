@@ -16,8 +16,7 @@ export default function TopRatedPage () {
 
       {/* TopRated Movies */}
       <main className="flex-1">
-        <TopRated />
-     
+        <TopRated showSeeMore={false} />
       </main>
 
       {/* Footer */}

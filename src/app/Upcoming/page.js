@@ -17,8 +17,7 @@ export default function UpcomingPage() {
 
       {/* Upcoming Movies */}
       <main className="flex-1">
-        <Upcoming />
-     
+         <Upcoming showSeeMore={false} />
       </main>
 
       {/* Footer */}

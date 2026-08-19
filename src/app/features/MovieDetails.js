@@ -8,14 +8,16 @@ const options = {
   method: "GET",
   headers: {
     accept: "application/json",
-    Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c`,
+    Authorization:
+      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c",
   },
 };
 
 export default function MovieDetails() {
-  const { id } = useParams();
- 
- const router = useRouter();
+  const params = useParams();
+  const router = useRouter();
+
+  const id = params?.id;
 
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -53,7 +55,10 @@ export default function MovieDetails() {
         setMovie(data);
       } catch (error) {
         console.error("Movie error:", error);
-        setError(error.message);
+
+        setError(
+          error instanceof Error ? error.message : "Something went wrong",
+        );
       } finally {
         setLoading(false);
       }
@@ -61,6 +66,22 @@ export default function MovieDetails() {
 
     getMovie();
   }, [id]);
+
+  // ==========================================
+  // GO TO POPULAR PAGE
+  // ==========================================
+
+  const goToPopular = () => {
+    router.push("/popular");
+  };
+
+  // ==========================================
+  // GO TO MOVIE DETAILS
+  // ==========================================
+
+  const goToMovie = (movieId) => {
+    router.push(`/movie/${movieId}`);
+  };
 
   // ==========================================
   // LOADING
@@ -90,8 +111,15 @@ export default function MovieDetails() {
 
   if (error) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-white">
-        <p className="text-red-500">{error}</p>
+      <main className="flex min-h-screen flex-col items-center justify-center bg-white">
+        <p className="mb-5 text-center text-red-500">{error}</p>
+
+        <button
+          onClick={goToPopular}
+          className="rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+        >
+          Back to Popular
+        </button>
       </main>
     );
   }
@@ -102,8 +130,15 @@ export default function MovieDetails() {
 
   if (!movie) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-white">
-        <p className="text-gray-500">Movie not found</p>
+      <main className="flex min-h-screen flex-col items-center justify-center bg-white">
+        <p className="mb-5 text-gray-500">Movie not found</p>
+
+        <button
+          onClick={goToPopular}
+          className="rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+        >
+          Back to Popular
+        </button>
       </main>
     );
   }
@@ -202,26 +237,33 @@ export default function MovieDetails() {
   // PAGE
   // ==========================================
 
-
-   const navigateToDetailsPage = () => {
-    router.push("/Popular");
-  };
-
   return (
     <main className="min-h-screen bg-white text-black">
       <div className="mx-auto max-w-275 px-6 py-7 md:py-10">
         {/* ======================================
+            BACK BUTTON
+        ====================================== */}
+
+        <button
+          onClick={() => router.back()}
+          className="mb-6 flex items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-black"
+        >
+          <span className="text-lg">←</span>
+          Back
+        </button>
+
+        {/* ======================================
             TITLE + RATING
         ====================================== */}
 
-        <div className="mb-6 flex items-start justify-between">
+        <div className="mb-6 flex items-start justify-between gap-5">
           <div>
             <h1 className="text-[30px] font-bold leading-tight md:text-[34px]">
               {movie.title}
             </h1>
 
             <div className="mt-1 text-[15px] text-gray-700">
-              {movie.release_date || "N/A"}
+              {movie.release_date || year}
 
               <span className="mx-2">•</span>
 
@@ -233,7 +275,7 @@ export default function MovieDetails() {
             </div>
           </div>
 
-          {/* Rating */}
+          {/* RATING */}
 
           <div className="hidden text-right sm:block">
             <p className="text-xs text-gray-600">Rating</p>
@@ -265,10 +307,11 @@ export default function MovieDetails() {
             {movie.poster_path ? (
               <Image
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title}
+                alt={movie.title || "Movie poster"}
                 fill
                 sizes="250px"
                 className="object-cover"
+                priority
               />
             ) : (
               <div className="flex h-full items-center justify-center text-gray-500">
@@ -283,7 +326,7 @@ export default function MovieDetails() {
             {movie.backdrop_path ? (
               <Image
                 src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-                alt={movie.title}
+                alt={movie.title || "Movie backdrop"}
                 fill
                 sizes="(max-width: 768px) 100vw, 800px"
                 className="object-cover"
@@ -293,8 +336,6 @@ export default function MovieDetails() {
                 No Backdrop
               </div>
             )}
-
-            {/* Backdrop overlay */}
 
             <div className="absolute inset-0 bg-black/10" />
 
@@ -400,42 +441,46 @@ export default function MovieDetails() {
 
         {recommendations.length > 0 && (
           <section className="mt-8 pb-12">
-            {/* Header */}
+            {/* HEADER */}
 
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-2xl font-bold">More like this</h2>
 
+              {/* SEE MORE */}
+
               <button
-                onClick={() => router.push("/popular")}
-                className="flex items-center gap-2 text-sm font-medium hover:underline"
+                type="button"
+                onClick={goToPopular}
+                className="flex items-center gap-2 text-sm font-medium transition hover:underline"
               >
                 See more
                 <span className="text-lg">→</span>
               </button>
             </div>
 
-            {/* Cards */}
+            {/* CARDS */}
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
               {recommendations.map((item) => (
                 <button
+                  type="button"
                   key={item.id}
-                  onClick={() => router.push(`/movie/${item.id}`)}
+                  onClick={() => goToMovie(item.id)}
                   className="group overflow-hidden rounded-lg bg-gray-100 text-left transition hover:-translate-y-1 hover:shadow-lg"
                 >
-                  {/* Poster */}
+                  {/* POSTER */}
 
                   <div className="relative aspect-2/3 overflow-hidden">
                     <Image
                       src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
-                      alt={item.title}
+                      alt={item.title || "Movie poster"}
                       fill
                       sizes="(max-width: 768px) 50vw, 180px"
                       className="object-cover transition duration-300 group-hover:scale-105"
                     />
                   </div>
 
-                  {/* Card information */}
+                  {/* CARD INFO */}
 
                   <div className="px-2 py-2">
                     <div className="flex items-center gap-1 text-sm">
@@ -459,8 +504,6 @@ export default function MovieDetails() {
         )}
       </div>
 
-      
-
       {/* =====================================================
           TRAILER MODAL
       ===================================================== */}
@@ -476,36 +519,29 @@ export default function MovieDetails() {
             className="relative w-full max-w-225 overflow-hidden rounded-lg bg-black shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
-            {/* ======================================
-                MODAL HEADER
-            ====================================== */}
+            {/* MODAL HEADER */}
 
             <div className="flex h-12 items-center justify-between bg-black px-4">
-              {/* Title */}
-
               <h2 className="text-sm font-medium text-white md:text-base">
-                {movie.title}: Trailer 2
+                {movie.title}: Trailer
               </h2>
 
-              {/* Right buttons */}
-
               <div className="flex items-center gap-3">
-                {/* SEE MOVIE DETAILS */}
-
+                {/* SEE MORE */}
 
                 <button
-                 onClick={() => router.push("/popular")}
-                   className="flex items-center gap-2 text-sm font-medium hover:underline"
-                    >
-                    See more
-                     <span className="text-lg">→</span>
+                  type="button"
+                  onClick={goToPopular}
+                  className="flex items-center gap-2 text-sm font-medium text-white hover:underline"
+                >
+                  See more
+                  <span className="text-lg">→</span>
                 </button>
-
-
 
                 {/* CLOSE */}
 
                 <button
+                  type="button"
                   onClick={() => setShowTrailer(false)}
                   className="flex h-7 w-7 items-center justify-center rounded-full text-xl leading-none text-white transition hover:bg-white/20"
                   aria-label="Close trailer"
@@ -515,9 +551,7 @@ export default function MovieDetails() {
               </div>
             </div>
 
-            {/* ======================================
-                YOUTUBE VIDEO
-            ====================================== */}
+            {/* YOUTUBE VIDEO */}
 
             <div className="relative aspect-video w-full bg-black">
               <iframe
@@ -534,4 +568,3 @@ export default function MovieDetails() {
     </main>
   );
 }
-

@@ -12,7 +12,7 @@ const options = {
   headers: {
     accept: "application/json",
     Authorization:
-      `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsImNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c`,
+      `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c`,
   },
 };
 
@@ -94,7 +94,7 @@ export const Popular = ({ showSeeMore = true }) => {
         console.log("Popular response:", data);
 
         if (!response.ok) {
-          throw new Error(
+          throw Error(
             data.status_message || "Failed to fetch popular movies"
           );
         }
@@ -304,3 +304,9 @@ export const Popular = ({ showSeeMore = true }) => {
 };
 
 export default Popular;
+
+
+
+
+
+
