@@ -7,52 +7,49 @@ import Image from "next/image";
 import StarLogo from "../Icons/StarLogo";
 import ArrowrightLogo from "../Icons/ArrowrightLogo";
 
-const url =
-  "https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1";
-
 const options = {
   method: "GET",
   headers: {
     accept: "application/json",
-    Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c`,
+    Authorization:
+      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c",
   },
 };
-
 
 const MovieCard = ({ movie, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className="w-full cursor-pointer overflow-hidden rounded-lg bg-[#f4f4f4] transition hover:scale-[1.02]"
+      className="w-full cursor-pointer overflow-hidden rounded-lg bg-[#f4f4f4] transition duration-200 hover:scale-[1.02]"
     >
-      {/* Poster */}
-      <div className="aspect-2/3 w-full overflow-hidden bg-gray-200">
+      {/* ================= POSTER ================= */}
+
+      <div className="h-81 w-full overflow-hidden rounded-t-lg bg-gray-200">
         <Image
           src={
             movie.poster_path
               ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
               : "/movies/DearSanta.png"
           }
-          alt={movie.title}
-          width={250}
-          height={350}
+          alt={movie.title || "Movie poster"}
+          width={216}
+          height={324}
           className="block h-full w-full object-cover"
         />
       </div>
 
-      {/* Information */}
+      {/* ================= INFORMATION ================= */}
+
       <div className="min-h-25 bg-[#f4f4f4] px-2.5 pb-3.75 pt-3.5">
         {/* Rating */}
         <div className="mb-2 flex items-center text-[14px] text-gray-700">
           <StarLogo />
 
-          <span>
-            {movie.vote_average?.toFixed(1)}
+          <span className="ml-1">
+            {movie.vote_average ? movie.vote_average.toFixed(1) : "N/A"}
           </span>
 
-          <span className="text-gray-500">
-            /10
-          </span>
+          <span className="ml-1 text-gray-500">/10</span>
         </div>
 
         {/* Title */}
@@ -64,131 +61,284 @@ const MovieCard = ({ movie, onClick }) => {
   );
 };
 
-export const Upcoming = () => {
+export const Upcoming = ({ showSeeMore = true }) => {
   const router = useRouter();
 
   const [movies, setMovies] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // =========================
-  // GET UPCOMING MOVIES
-  // =========================
   useEffect(() => {
     const getMovies = async () => {
       try {
         setLoading(true);
         setError("");
 
+        // Dynamic page
+        const url = `https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=${page}`;
+        console.log("Fetching Upcoming page:", page);
         const response = await fetch(url, options);
-
         const data = await response.json();
+        console.log("UPCOMING STATUS:", response.status);
+        console.log("UPCOMING DATA:", data);
 
-        console.log(
-          "Upcoming status:",
-          response.status
-        );
-
-        console.log(
-          "Upcoming response:",
-          data
-        );
-
+        // API error
         if (!response.ok) {
-          throw Error(
-            data.status_message ||
-              "Failed to fetch upcoming movies"
+          throw new Error(
+            data.status_message || `TMDB Error: ${response.status}`,
           );
         }
 
-        setMovies(data.results.slice(0, 10));
-      } catch (error) {
-        console.error(
-          "Upcoming Error:",
-          error
-        );
+        // Movies
+        setMovies(data.results || []);
 
-        setError(error.message);
+        // Total pages
+        setTotalPages(Math.min(data.total_pages || 1, 500));
+      } catch (error) {
+        console.error("UPCOMING ERROR:", error);
+
+        setMovies([]);
+
+        setError(error.message || "Failed to fetch upcoming movies");
       } finally {
         setLoading(false);
       }
     };
 
     getMovies();
-  }, []);
+  }, [page]);
 
-  // =========================
-  // SEE MORE
-  // =========================
+// seemore
   const navigateToUpcomingPage = () => {
     router.push("/Upcoming");
   };
 
-  // =========================
-  // MOVIE DETAIL
-  // =========================
-  const navigateToMovieDetail = (movieId) => {
+// movie detail
+  const handleMovieClick = (movieId) => {
+    console.log("Clicked movie ID:", movieId);
     router.push(`/movie/${movieId}`);
   };
 
-  const handleMovieClick = (id) => {
-    router.push(`/movie/${id}`);
-  }
+// page change
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) {
+      return;
+    }
+    setPage(newPage);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+// previous
+   const handlePrevious = () => {
+    if (page > 1) {
+      setPage(page - 1);
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
+
+// next
+  const handleNext = () => {
+    if (page < totalPages) {
+      setPage(page + 1);
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
+
+
+
   return (
     <section className="w-full px-17.5 pb-10">
+      {/* =================================================
+          HEADER
+      ================================================= */}
 
-      {/* Header */}
       <div className="my-8 mb-8.75 flex items-center justify-between">
+        {/* Title */}
 
-        <h2 className="text-[28px] font-bold text-black">
-          Upcoming
-        </h2>
+        <h2 className="text-[28px] font-bold text-black">Upcoming</h2>
 
-        <button
-          className="flex items-center gap-2 text-sm text-[#4338ca] hover:underline"
-          onClick={navigateToUpcomingPage}
-        >
-          See more
+        {/* See More */}
 
-          <ArrowrightLogo />
-        </button>
+        {showSeeMore && (
+          <button
+            onClick={navigateToUpcomingPage}
+            className="flex items-center gap-2 text-sm text-[#4338ca] hover:underline"
+          >
+            <span>See more</span>
 
+            <ArrowrightLogo />
+          </button>
+        )}
       </div>
 
-      {/* Loading */}
+      {/* =================================================
+          LOADING
+      ================================================= */}
+
       {loading && (
-        <p className="text-gray-500">
-          Loading...
-        </p>
-      )}
-
-      {/* Error */}
-      {error && (
-        <p className="text-red-500">
-          {error}
-        </p>
-      )}
-
-      {/* Movies */}
-      {!loading && !error && (
-        <div className="grid grid-cols-5 gap-x-8 gap-y-8">
-
-          {movies.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              movie={movie}
-              onClick={() =>
-                handleMovieClick(movie.id)
-              }
-            />
-          ))}
-
+        <div className="flex min-h-75 items-center justify-center">
+          <p className="text-gray-500">Loading...</p>
         </div>
       )}
 
+      {/* =================================================
+          ERROR
+      ================================================= */}
+
+      {!loading && error && (
+        <div className="flex min-h-75 flex-col items-center justify-center gap-3">
+          <p className="text-red-500">{error}</p>
+
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-md bg-black px-4 py-2 text-sm text-white hover:bg-gray-800"
+          >
+            Try again
+          </button>
+        </div>
+      )}
+
+      {/* =================================================
+          MOVIES
+      ================================================= */}
+
+      {!loading && !error && movies.length > 0 && (
+        <>
+          {/* Movie Grid */}
+
+          <div className="grid grid-cols-5 gap-x-8 gap-y-8">
+            {movies.slice(0, 10).map((movie) => (
+              <MovieCard
+                key={movie.id}
+                movie={movie}
+                onClick={() => handleMovieClick(movie.id)}
+              />
+            ))}
+          </div>
+
+          {/* =================================================
+                PAGINATION
+            ================================================= */}
+
+          {!showSeeMore && (
+            <div className="mt-8 flex h-10 items-center justify-end gap-2 text-[14px]">
+              {/* =================================================
+                    PREVIOUS
+                ================================================= */}
+
+              <button
+                onClick={handlePrevious}
+                disabled={page === 1}
+                className={`flex h-10 items-center justify-center gap-1 rounded-md border border-[#E4E4E7] px-3 ${
+                  page === 1
+                    ? "cursor-not-allowed text-gray-300"
+                    : "cursor-pointer text-[#09090B] hover:bg-zinc-100"
+                }`}
+              >
+                <span className="text-[18px] leading-none">‹</span>
+
+                <span className="font-inter font-medium text-[14px] leading-5">
+                  Previous
+                </span>
+              </button>
+
+              {/* =================================================
+                    PAGE NUMBERS
+                ================================================= */}
+
+              <div className="flex h-10 items-center gap-1">
+                {/* Current Page */}
+
+                <button
+                  onClick={() => handlePageChange(page)}
+                  className="flex h-10 w-10 items-center justify-center rounded-md border border-[#E4E4E7] bg-white text-black"
+                >
+                  {page}
+                </button>
+
+                {/* Next Page */}
+
+                {page + 1 <= totalPages && (
+                  <button
+                    onClick={() => handlePageChange(page + 1)}
+                    className="flex h-10 w-10 items-center justify-center rounded-md text-[#09090B] hover:bg-zinc-100"
+                  >
+                    {page + 1}
+                  </button>
+                )}
+
+                {/* Dots */}
+
+                {page + 4 < totalPages && (
+                  <button
+                    disabled
+                    className="flex h-10 w-10 cursor-default items-center justify-center rounded-md text-[#09090B]"
+                  >
+                    ...
+                  </button>
+                )}
+
+                {/* Page + 4 */}
+
+                {page + 4 <= totalPages && (
+                  <button
+                    onClick={() => handlePageChange(page + 4)}
+                    className="flex h-10 w-10 items-center justify-center rounded-md text-[#09090B] hover:bg-zinc-100"
+                  >
+                    {page + 4}
+                  </button>
+                )}
+              </div>
+
+              {/* =================================================
+                    NEXT
+                ================================================= */}
+
+              <button
+                onClick={handleNext}
+                disabled={page === totalPages}
+                className={`flex h-10 items-center justify-center gap-1 rounded-md border border-[#E4E4E7] px-3 ${
+                  page === totalPages
+                    ? "cursor-not-allowed text-gray-300"
+                    : "cursor-pointer text-[#09090B] hover:bg-zinc-100"
+                }`}
+              >
+                <span className="font-inter font-medium text-[14px] leading-5">
+                  Next
+                </span>
+
+                <span className="text-[18px] leading-none">›</span>
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* =================================================
+          NO MOVIES
+      ================================================= */}
+
+      {!loading && !error && movies.length === 0 && (
+        <div className="flex min-h-75 items-center justify-center">
+          <p className="text-gray-500">No movies found.</p>
+        </div>
+      )}
     </section>
   );
 };
 
 export default Upcoming;
-
