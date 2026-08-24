@@ -2,34 +2,55 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Header } from "../../features/Header";
-import { Footer } from "../../features/Footer";
+
+import { Header } from "./Header";
+import { Footer } from "./Footer";
 
 const TOKEN =
-  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c";
+  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIiLCJzdWIiOiI2YTdkMjAwMjE1YWVlN2MxZTZiN2FjYWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c";
 
-export default function SearchPage() {
+const genres = [
+  { id: 28, name: "Action" },
+  { id: 12, name: "Adventure" },
+  { id: 16, name: "Animation" },
+  { id: 35, name: "Comedy" },
+  { id: 80, name: "Crime" },
+  { id: 99, name: "Documentary" },
+  { id: 18, name: "Drama" },
+  { id: 10751, name: "Family" },
+  { id: 14, name: "Fantasy" },
+  { id: 27, name: "Horror" },
+  { id: 10402, name: "Music" },
+  { id: 9648, name: "Mystery" },
+  { id: 10749, name: "Romance" },
+  { id: 878, name: "Science Fiction" },
+  { id: 53, name: "Thriller" },
+];
+
+export default function Genre() {
   const params = useParams();
   const router = useRouter();
 
-  const searchValue = params.id;
+  const genreId = params.id;
 
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
+  const currentGenre = genres.find((genre) => genre.id === Number(genreId));
+
+  const genreName = currentGenre?.name || "Genre";
+
   useEffect(() => {
-    if (!searchValue) return;
+    if (!genreId) return;
 
     const getMovies = async () => {
       try {
         setLoading(true);
 
         const response = await fetch(
-          `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
-            searchValue,
-          )}&language=en-US&page=${page}`,
+          `https://api.themoviedb.org/3/discover/movie?language=en&with_genres=${genreId}&page=${page}`,
           {
             method: "GET",
             headers: {
@@ -40,7 +61,7 @@ export default function SearchPage() {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch movies");
+          throw new Error(`API Error: ${response.status}`);
         }
 
         const data = await response.json();
@@ -48,7 +69,7 @@ export default function SearchPage() {
         setMovies(data.results || []);
         setTotalPages(data.total_pages || 1);
       } catch (error) {
-        console.error("Search error:", error);
+        console.error("Genre API Error:", error);
         setMovies([]);
       } finally {
         setLoading(false);
@@ -56,14 +77,12 @@ export default function SearchPage() {
     };
 
     getMovies();
-  }, [searchValue, page]);
+  }, [genreId, page]);
 
-  // MOVIE DETIAL
   const handleMovieClick = (movieId) => {
     router.push(`/movie/${movieId}`);
   };
 
-  // PAGINATION
   const previousPage = () => {
     if (page > 1) {
       setPage(page - 1);
@@ -86,30 +105,32 @@ export default function SearchPage() {
     }
   };
 
+  const handleGenreChange = (id) => {
+    router.push(`/genre/${id}`);
+    setPage(1);
+  };
+
   return (
     <main className="min-h-screen bg-white">
-      {/* HEADER */}
       <Header />
 
-      {/* SEARCH RESULTS */}
       <section className="mx-auto max-w-360 px-10 py-10">
         {/* TITLE */}
-        <h1 className="text-2xl font-semibold text-gray-900">Search results</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">
+          {genreName} Movies
+        </h1>
 
-        {/* RESULT COUNT */}
-        <p className="mt-4 text-sm font-medium text-gray-900">
-          {movies.length > 0
-            ? `${movies.length} results for "${searchValue}"`
-            : `0 results for "${searchValue}"`}
+        <p className="mt-2 text-sm text-gray-500">
+          See movies in the {genreName} genre
         </p>
 
         <div className="mt-8 flex gap-10">
-          {/*MOVIE*/}
+          {/* MOVIES */}
           <div className="flex-1">
             {/* LOADING */}
-            {loading ? (
+            {loading && (
               <div className="grid grid-cols-5 gap-5">
-                {Array.from({ length: 5 }).map((_, index) => (
+                {Array.from({ length: 10 }).map((_, index) => (
                   <div
                     key={index}
                     className="animate-pulse overflow-hidden rounded-lg bg-gray-100"
@@ -118,19 +139,22 @@ export default function SearchPage() {
 
                     <div className="p-3">
                       <div className="h-3 w-16 rounded bg-gray-200" />
-
                       <div className="mt-3 h-4 w-24 rounded bg-gray-200" />
                     </div>
                   </div>
                 ))}
               </div>
-            ) : movies.length === 0 ? (
-              /* NO RESULTS */
+            )}
+
+            {/* NO RESULTS */}
+            {!loading && movies.length === 0 && (
               <div className="flex h-32 items-center justify-center rounded-lg border border-gray-200 text-sm text-gray-500">
-                No results found.
+                No movies found.
               </div>
-            ) : (
-              /* MOVIES */
+            )}
+
+            {/* MOVIES */}
+            {!loading && movies.length > 0 && (
               <div className="grid grid-cols-5 gap-5">
                 {movies.map((movie) => (
                   <div
@@ -153,7 +177,7 @@ export default function SearchPage() {
                       )}
                     </div>
 
-                    {/* MOVIE INFO */}
+                    {/* INFO */}
                     <div className="p-3">
                       {/* RATING */}
                       <div className="flex items-center gap-1 text-xs">
@@ -177,10 +201,9 @@ export default function SearchPage() {
               </div>
             )}
 
-            {/*PAGINATION*/}
+            {/* PAGINATION */}
             {!loading && movies.length > 0 && (
               <div className="mt-10 flex items-center justify-end gap-3">
-                {/* PREVIOUS */}
                 <button
                   onClick={previousPage}
                   disabled={page === 1}
@@ -193,12 +216,10 @@ export default function SearchPage() {
                   ‹ Previous
                 </button>
 
-                {/* CURRENT PAGE */}
                 <span className="flex h-8 min-w-8 items-center justify-center rounded-md border border-gray-200 px-2 text-sm text-gray-700">
                   {page}
                 </span>
 
-                {/* NEXT */}
                 <button
                   onClick={nextPage}
                   disabled={page >= totalPages}
@@ -214,8 +235,8 @@ export default function SearchPage() {
             )}
           </div>
 
-          {/*SEARCH BY GENRE*/}
-          <aside className="w-64 border-l border-gray-200 pl-8">
+          {/* GENRE SIDEBAR */}
+          <aside className="w-64 shrink-0 border-l border-gray-200 pl-8">
             <h2 className="text-lg font-semibold text-gray-900">
               Search by genre
             </h2>
@@ -225,43 +246,17 @@ export default function SearchPage() {
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              {[
-                "Action",
-                "Adventure",
-                "Animation",
-                "Biography",
-                "Comedy",
-                "Crime",
-                "Documentary",
-                "Drama",
-                "Family",
-                "Fantasy",
-                "Film-Noir",
-                "Game-Show",
-                "History",
-                "Horror",
-                "Music",
-                "Musical",
-                "Mystery",
-                "News",
-                "Reality-TV",
-                "Romance",
-                "Sci-Fi",
-                "Short",
-                "Sport",
-                "Talk-Show",
-                "Thriller",
-                "War",
-                "Western",
-              ].map((genre) => (
+              {genres.map((genre) => (
                 <button
-                  key={genre}
-                  onClick={() => {
-                    router.push(`/genre/${encodeURIComponent(genre)}`);
-                  }}
-                  className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-700 hover:bg-gray-100"
+                  key={genre.id}
+                  onClick={() => handleGenreChange(genre.id)}
+                  className={`rounded-full border px-3 py-1 text-xs transition ${
+                    Number(genreId) === genre.id
+                      ? "border-blue-500 bg-blue-500 text-white"
+                      : "border-gray-200 text-gray-700 hover:bg-gray-100"
+                  }`}
                 >
-                  {genre} ›
+                  {genre.name} ›
                 </button>
               ))}
             </div>
@@ -269,13 +264,7 @@ export default function SearchPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <Footer />
     </main>
   );
 }
-
-
-
-
-

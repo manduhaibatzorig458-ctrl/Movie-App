@@ -87,65 +87,13 @@ export const HeroSection = () => {
 
         <div className="relative z-10 mx-auto flex h-full max-w-360 items-center px-16">
           <div className="-mt-5 w-97.5 text-white">
-            {loading ? (
-              <>
-                <div className="mb-3 h-6 w-32 animate-pulse rounded bg-white/30" />
 
-                <div className="mb-5 h-12 w-72 animate-pulse rounded bg-white/30" />
 
-                <div className="mb-7 h-6 w-28 animate-pulse rounded bg-white/30" />
 
-                <div className="mb-2 h-4 w-full animate-pulse rounded bg-white/20" />
-                <div className="mb-2 h-4 w-11/12 animate-pulse rounded bg-white/20" />
-                <div className="mb-6 h-4 w-9/12 animate-pulse rounded bg-white/20" />
-              </>
-            ) : currentMovie ? (
-              <>
-                {/* Now Playing */}
-                <p className="mb-1 text-lg">Now Playing:</p>
+             {/* tailbar */}
 
-                {/* Movie Title */}
-                <h2 className="mb-3 text-[40px] font-bold leading-tight">
-                  {currentMovie.title}
-                </h2>
 
-                {/* Rating */}
-                <div className="mb-7 flex items-center gap-2">
-                  <StarLogo />
 
-                  <span className="text-[19px] font-semibold">
-                    {currentMovie.vote_average?.toFixed(1)}
-                  </span>
-
-                  <span className="text-[17px] text-gray-300">/10</span>
-                </div>
-
-                {/* Description */}
-                <p className="mb-6 text-sm leading-[1.45] text-gray-200">
-                  {currentMovie.overview}
-                </p>
-
-                {/* Trailer Button */}
-                <button
-                  onClick={() => {
-                    if (currentMovie.id) {
-                      window.open(
-                        `https://www.youtube.com/results?search_query=${encodeURIComponent(
-                          currentMovie.title + " official trailer",
-                        )}`,
-                        "_blank",
-                      );
-                    }
-                  }}
-                  className="flex items-center gap-3 rounded-lg bg-white px-5 py-3 text-[15px] font-medium text-gray-800 transition hover:bg-gray-100"
-                >
-                  <PlayLogo />
-                  Watch Trailer
-                </button>
-              </>
-            ) : (
-              <p className="text-white">Movie not found.</p>
-            )}
           </div>
         </div>
 
