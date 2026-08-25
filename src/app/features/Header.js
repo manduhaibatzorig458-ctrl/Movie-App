@@ -60,19 +60,13 @@ export const Header = () => {
           </span>
         </button>
 
-        {/* RIGHT SIDE */}
+        {/* RIGHT */}
         <div className="ml-auto flex items-center gap-3">
           {/* GENRE */}
           <div className="relative">
             <button
               onClick={() => setGenreOpen(!genreOpen)}
-              className="
-                flex h-10 items-center gap-2 rounded-lg
-                border border-gray-200 bg-white
-                px-4 text-sm font-medium text-gray-700
-                transition
-                // hover:border-gray-300 hover:bg-gray-50
-              "
+              className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
             >
               <span>Genre</span>
 
@@ -85,26 +79,16 @@ export const Header = () => {
               </div>
             </button>
 
-            {/* DROPDOWN */}
             {genreOpen && (
               <>
-                {/* Outside click */}
+                {/* OUTSIDE CLICK */}
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setGenreOpen(false)}
                 />
 
-                <div
-                  className="
-                    absolute right-0 top-12 z-50
-                    w-90
-                    rounded-xl
-                    border border-gray-200
-                    bg-white
-                    p-3
-                    shadow-xl
-                  "
-                >
+                {/* DROPDOWN */}
+                <div className="absolute right-0 top-12 z-50 w-90 rounded-xl border border-gray-200 bg-white p-3 shadow-xl">
                   <div className="mb-2 px-2">
                     <p className="text-xs font-medium text-gray-400">
                       MOVIE GENRES
@@ -116,12 +100,7 @@ export const Header = () => {
                       <button
                         key={genre.id}
                         onClick={() => handleGenre(genre.id)}
-                        className="
-                          rounded-lg px-3 py-2
-                          text-left text-xs
-                          text-gray-700
-                          transition
-                        "
+                        className="rounded-lg px-3 py-2 text-left text-xs text-gray-700 transition hover:bg-gray-100"
                       >
                         {genre.name}
                       </button>
@@ -133,21 +112,7 @@ export const Header = () => {
           </div>
 
           {/* SEARCH */}
-          <div
-            className="
-              hidden h-10 w-180
-              items-center gap-2
-              rounded-lg
-              border border-gray-200
-              bg-gray-50
-              px-3
-              transition
-              // focus-within:border-blue-400
-              focus-within:bg-white
-              focus-within:ring-2
-              sm:flex
-            "
-          >
+          <div className="hidden h-10 w-180 items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 focus-within:bg-white focus-within:ring-2 sm:flex">
             <SearchLogo />
 
             <input
@@ -156,47 +121,22 @@ export const Header = () => {
               onChange={(e) => setSearchValue(e.target.value)}
               onKeyDown={handleSearch}
               placeholder="Search..."
-              className="
-                h-full w-full
-                bg-transparent
-                text-sm text-gray-800
-                outline-none
-                placeholder:text-gray-400
-              "
+              className="h-full w-full bg-transparent text-sm text-gray-800 outline-none placeholder:text-gray-400"
             />
           </div>
 
-          {/* ================= MOBILE SEARCH ================= */}
-          <button
-            className="
-              flex h-10 w-10
-              items-center justify-center
-              rounded-lg
-              border border-gray-200
-              bg-white
-              sm:hidden
-            "
-          >
+          {/* MOBILE SEARCH */}
+          <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white sm:hidden">
             <SearchLogo />
           </button>
 
           {/* DARK MODE */}
           <button
             type="button"
-            className="
-              flex h-10 w-10
-              items-center justify-center
-              rounded-lg
-              border border-gray-200
-              bg-white
-              text-gray-600
-              transition
-              hover:border-gray-300
-              hover:bg-gray-50
-            "
             onClick={() => {
               document.documentElement.classList.toggle("dark");
             }}
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-50"
           >
             <MoonLogo />
           </button>
@@ -205,3 +145,8 @@ export const Header = () => {
     </header>
   );
 };
+
+
+
+
+

@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
-import { Header } from "./Header";
-import { Footer } from "./Footer";
+import { Header } from "../features/Header";
+import { Footer } from "../features/Footer";
 
 const TOKEN =
-  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIiLCJzdWIiOiI2YTdkMjAwMjE1YWVlN2MxZTZiN2FjYWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c";
+  `eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c`;
 
 const genres = [
   { id: 28, name: "Action" },
@@ -27,20 +27,22 @@ const genres = [
   { id: 53, name: "Thriller" },
 ];
 
-export default function Genre() {
+export default function GenrePage() {
   const params = useParams();
   const router = useRouter();
 
-  const genreId = params.id;
+  const genreId = Number(params.id);
+
+  const [selectedGenres, setSelectedGenres] = useState([]);
 
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  const currentGenre = genres.find((genre) => genre.id === Number(genreId));
+  const currentGenre = genres.find((genre) => genre.id === genreId);
 
-  const genreName = currentGenre?.name || "Genre";
+  const genreName = currentGenre ? currentGenre.name : "Movies";
 
   useEffect(() => {
     if (!genreId) return;
@@ -50,7 +52,7 @@ export default function Genre() {
         setLoading(true);
 
         const response = await fetch(
-          `https://api.themoviedb.org/3/discover/movie?language=en&with_genres=${genreId}&page=${page}`,
+          `https://api.themoviedb.org/3/discover/movie?language=en-US&with_genres=${genreId}&page=${page}`,
           {
             method: "GET",
             headers: {
@@ -61,7 +63,7 @@ export default function Genre() {
         );
 
         if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
+          throw new Error(`TMDB Error: ${response.status}`);
         }
 
         const data = await response.json();
@@ -69,7 +71,7 @@ export default function Genre() {
         setMovies(data.results || []);
         setTotalPages(data.total_pages || 1);
       } catch (error) {
-        console.error("Genre API Error:", error);
+        console.error("Genre Error:", error);
         setMovies([]);
       } finally {
         setLoading(false);
@@ -81,6 +83,11 @@ export default function Genre() {
 
   const handleMovieClick = (movieId) => {
     router.push(`/movie/${movieId}`);
+  };
+
+  const handleGenreClick = (id) => {
+    setPage(1);
+    router.push(`/genre/${id}`);
   };
 
   const previousPage = () => {
@@ -105,11 +112,6 @@ export default function Genre() {
     }
   };
 
-  const handleGenreChange = (id) => {
-    router.push(`/genre/${id}`);
-    setPage(1);
-  };
-
   return (
     <main className="min-h-screen bg-white">
       <Header />
@@ -121,15 +123,15 @@ export default function Genre() {
         </h1>
 
         <p className="mt-2 text-sm text-gray-500">
-          See movies in the {genreName} genre
+          See lists of {genreName} movies
         </p>
 
         <div className="mt-8 flex gap-10">
-          {/* MOVIES */}
-          <div className="flex-1">
+          {/* MOVIE LIST */}
+          <div className="min-w-0 flex-1">
             {/* LOADING */}
             {loading && (
-              <div className="grid grid-cols-5 gap-5">
+              <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                 {Array.from({ length: 10 }).map((_, index) => (
                   <div
                     key={index}
@@ -146,7 +148,7 @@ export default function Genre() {
               </div>
             )}
 
-            {/* NO RESULTS */}
+            {/* NO RESULT */}
             {!loading && movies.length === 0 && (
               <div className="flex h-32 items-center justify-center rounded-lg border border-gray-200 text-sm text-gray-500">
                 No movies found.
@@ -155,12 +157,12 @@ export default function Genre() {
 
             {/* MOVIES */}
             {!loading && movies.length > 0 && (
-              <div className="grid grid-cols-5 gap-5">
+              <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                 {movies.map((movie) => (
                   <div
                     key={movie.id}
                     onClick={() => handleMovieClick(movie.id)}
-                    className="cursor-pointer overflow-hidden rounded-lg bg-gray-100 transition hover:-translate-y-1 hover:shadow-md"
+                    className="cursor-pointer overflow-hidden rounded-lg bg-gray-100 transition hover:-translate-y-1 hover:shadow-lg"
                   >
                     {/* POSTER */}
                     <div className="h-64 w-full overflow-hidden">
@@ -192,7 +194,7 @@ export default function Genre() {
                       </div>
 
                       {/* TITLE */}
-                      <h2 className="mt-2 line-clamp-2 text-sm text-gray-800">
+                      <h2 className="mt-2 line-clamp-2 text-sm font-medium text-gray-800">
                         {movie.title}
                       </h2>
                     </div>
@@ -236,7 +238,7 @@ export default function Genre() {
           </div>
 
           {/* GENRE SIDEBAR */}
-          <aside className="w-64 shrink-0 border-l border-gray-200 pl-8">
+          <aside className="hidden w-64 shrink-0 border-l border-gray-200 pl-8 lg:block">
             <h2 className="text-lg font-semibold text-gray-900">
               Search by genre
             </h2>
@@ -249,9 +251,9 @@ export default function Genre() {
               {genres.map((genre) => (
                 <button
                   key={genre.id}
-                  onClick={() => handleGenreChange(genre.id)}
+                  onClick={() => handleGenreClick(genre.id)}
                   className={`rounded-full border px-3 py-1 text-xs transition ${
-                    Number(genreId) === genre.id
+                    genre.id === genreId
                       ? "border-blue-500 bg-blue-500 text-white"
                       : "border-gray-200 text-gray-700 hover:bg-gray-100"
                   }`}
@@ -268,3 +270,4 @@ export default function Genre() {
     </main>
   );
 }
+
