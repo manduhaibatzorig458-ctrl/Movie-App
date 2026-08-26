@@ -7,7 +7,7 @@ import { Header } from "../features/Header";
 import { Footer } from "../features/Footer";
 
 const TOKEN =
-  `eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c`;
+  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c";
 
 const genres = [
   { id: 28, name: "Action" },
@@ -31,28 +31,50 @@ export default function GenrePage() {
   const params = useParams();
   const router = useRouter();
 
-  const genreId = Number(params.id);
+  const genreParam = params.id;
 
   const [selectedGenres, setSelectedGenres] = useState([]);
-
   const [movies, setMovies] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  const currentGenre = genres.find((genre) => genre.id === genreId);
-
-  const genreName = currentGenre ? currentGenre.name : "Movies";
-
   useEffect(() => {
-    if (!genreId) return;
+    if (!genreParam) return;
+
+    const ids = String(genreParam)
+      .split("-")
+      .map(Number)
+      .filter((id) => !Number.isNaN(id));
+
+    setSelectedGenres(ids);
+    setPage(1);
+  }, [genreParam]);
+
+  const selectedGenreNames = genres
+    .filter((genre) => selectedGenres.includes(genre.id))
+    .map((genre) => genre.name);
+
+  const genreName =
+    selectedGenreNames.length > 0 ? selectedGenreNames.join(" + ") : "Movies";
+
+  // GET MOVIES
+  useEffect(() => {
+    if (selectedGenres.length === 0) {
+      return;
+    }
 
     const getMovies = async () => {
       try {
         setLoading(true);
 
+        const genreIds = selectedGenres.join(",");
+
+        console.log("Selected genres:", selectedGenres);
+        console.log("TMDB genres:", genreIds);
+
         const response = await fetch(
-          `https://api.themoviedb.org/3/discover/movie?language=en-US&with_genres=${genreId}&page=${page}`,
+          `https://api.themoviedb.org/3/discover/movie?language=en-US&with_genres=${genreIds}&page=${page}`,
           {
             method: "GET",
             headers: {
@@ -62,37 +84,70 @@ export default function GenrePage() {
           },
         );
 
-        if (!response.ok) {
-          throw new Error(`TMDB Error: ${response.status}`);
-        }
-
         const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.status_message || `TMDB Error: ${response.status}`,
+          );
+        }
 
         setMovies(data.results || []);
         setTotalPages(data.total_pages || 1);
       } catch (error) {
         console.error("Genre Error:", error);
+
         setMovies([]);
+        setTotalPages(1);
       } finally {
         setLoading(false);
       }
     };
 
     getMovies();
-  }, [genreId, page]);
+  }, [selectedGenres, page]);
 
+  // MOVIE CLICK
   const handleMovieClick = (movieId) => {
     router.push(`/movie/${movieId}`);
   };
 
+  //  GENRE CLICK
   const handleGenreClick = (id) => {
+    let newGenres;
+
+    if (selectedGenres.includes(id)) {
+      newGenres = selectedGenres.filter((genreId) => genreId !== id);
+    } else {
+      newGenres = [...selectedGenres, id];
+    }
+
     setPage(1);
-    router.push(`/genre/${id}`);
+
+    if (newGenres.length === 0) {
+      router.push("/genre/28");
+      return;
+    }
+
+    router.push(`/genre/${newGenres.join("-")}`);
   };
 
+  // REMOVE SELECTED GENRE
+  const removeGenre = (id) => {
+    const newGenres = selectedGenres.filter((genreId) => genreId !== id);
+
+    if (newGenres.length === 0) {
+      router.push("/genre/28");
+      return;
+    }
+
+    router.push(`/genre/${newGenres.join("-")}`);
+  };
+
+  // PREVIOUS PAGE
   const previousPage = () => {
     if (page > 1) {
-      setPage(page - 1);
+      setPage((prev) => prev - 1);
 
       window.scrollTo({
         top: 0,
@@ -101,9 +156,10 @@ export default function GenrePage() {
     }
   };
 
+  // NEXT PAGE
   const nextPage = () => {
     if (page < totalPages) {
-      setPage(page + 1);
+      setPage((prev) => prev + 1);
 
       window.scrollTo({
         top: 0,
@@ -114,6 +170,7 @@ export default function GenrePage() {
 
   return (
     <main className="min-h-screen bg-white">
+      {/* HEADER */}
       <Header />
 
       <section className="mx-auto max-w-360 px-10 py-10">
@@ -126,8 +183,32 @@ export default function GenrePage() {
           See lists of {genreName} movies
         </p>
 
+        {/* SELECTED GENRES */}
+        {selectedGenres.length > 0 && (
+          <div className="mt-5 flex flex-wrap gap-2">
+            {selectedGenres.map((id) => {
+              const genre = genres.find((item) => item.id === id);
+
+              if (!genre) return null;
+
+              return (
+                <button
+                  key={genre.id}
+                  onClick={() => removeGenre(genre.id)}
+                  className="flex items-center gap-2 rounded-full bg-blue-500 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-blue-600"
+                >
+                  {genre.name}
+
+                  <span className="text-sm">×</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div className="mt-8 flex gap-10">
           {/* MOVIE LIST */}
+
           <div className="min-w-0 flex-1">
             {/* LOADING */}
             {loading && (
@@ -141,6 +222,7 @@ export default function GenrePage() {
 
                     <div className="p-3">
                       <div className="h-3 w-16 rounded bg-gray-200" />
+
                       <div className="mt-3 h-4 w-24 rounded bg-gray-200" />
                     </div>
                   </div>
@@ -148,7 +230,7 @@ export default function GenrePage() {
               </div>
             )}
 
-            {/* NO RESULT */}
+            {/* NO RESULTS */}
             {!loading && movies.length === 0 && (
               <div className="flex h-32 items-center justify-center rounded-lg border border-gray-200 text-sm text-gray-500">
                 No movies found.
@@ -206,6 +288,7 @@ export default function GenrePage() {
             {/* PAGINATION */}
             {!loading && movies.length > 0 && (
               <div className="mt-10 flex items-center justify-end gap-3">
+                {/* PREVIOUS */}
                 <button
                   onClick={previousPage}
                   disabled={page === 1}
@@ -218,10 +301,12 @@ export default function GenrePage() {
                   ‹ Previous
                 </button>
 
+                {/* CURRENT PAGE */}
                 <span className="flex h-8 min-w-8 items-center justify-center rounded-md border border-gray-200 px-2 text-sm text-gray-700">
                   {page}
                 </span>
 
+                {/* NEXT */}
                 <button
                   onClick={nextPage}
                   disabled={page >= totalPages}
@@ -237,30 +322,35 @@ export default function GenrePage() {
             )}
           </div>
 
-          {/* GENRE SIDEBAR */}
+          {/* GENRE SIDEBAR*/}
+
           <aside className="hidden w-64 shrink-0 border-l border-gray-200 pl-8 lg:block">
             <h2 className="text-lg font-semibold text-gray-900">
               Search by genre
             </h2>
 
-            <p className="mt-1 text-xs text-gray-500">
-              See lists of movies by genre
-            </p>
+            <p className="mt-1 text-xs text-gray-500">Select multiple genres</p>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              {genres.map((genre) => (
-                <button
-                  key={genre.id}
-                  onClick={() => handleGenreClick(genre.id)}
-                  className={`rounded-full border px-3 py-1 text-xs transition ${
-                    genre.id === genreId
-                      ? "border-blue-500 bg-blue-500 text-white"
-                      : "border-gray-200 text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  {genre.name} ›
-                </button>
-              ))}
+              {genres.map((genre) => {
+                const isSelected = selectedGenres.includes(genre.id);
+
+                return (
+                  <button
+                    key={genre.id}
+                    onClick={() => handleGenreClick(genre.id)}
+                    className={`rounded-full border px-3 py-1 text-xs transition ${
+                      isSelected
+                        ? "border-blue-500 bg-blue-500 text-white"
+                        : "border-gray-200 text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    {genre.name}
+
+                    {isSelected ? " ✓" : " ›"}
+                  </button>
+                );
+              })}
             </div>
           </aside>
         </div>
@@ -270,4 +360,3 @@ export default function GenrePage() {
     </main>
   );
 }
-

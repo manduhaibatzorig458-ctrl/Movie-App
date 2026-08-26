@@ -162,7 +162,7 @@ export default function SearchPage() {
                         <span className="text-gray-600">
                           {movie.vote_average
                             ? movie.vote_average.toFixed(1)
-                            : "N/A"}
+                            : "0"}
                           /10
                         </span>
                       </div>
@@ -274,6 +274,12 @@ export default function SearchPage() {
     </main>
   );
 }
+
+
+
+
+
+
 
 
 
