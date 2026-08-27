@@ -8,8 +8,10 @@ import ChevronrightLogo from "../Icons/ChevronrightLogo";
 import PlayLogo from "../Icons/PlayLogo";
 
 import Upcoming from "./Upcoming";
-import Popular from "./Popular";
 import TopRated from "./TopRated";
+import Popular from "./Popular";
+
+import { SectionSkeleton } from "./Skeleton";
 
 const API_URL =
   "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1";
@@ -31,7 +33,7 @@ export const HeroSection = () => {
   const [loading, setLoading] = useState(true);
   const [trailerLoading, setTrailerLoading] = useState(false);
 
-  // GET NOW PLAYING MOVIES
+  // GET NOW PLAYING MOVIE
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -61,7 +63,18 @@ export const HeroSection = () => {
     setCurrentIndex((prev) => (prev + 1) % movies.length);
   };
 
-  // TRAILER
+  //  AUTO SLIDE
+  useEffect(() => {
+    if (movies.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % movies.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [movies.length]);
+
+  //  TRAILER
   const handleTrailer = async () => {
     if (!currentMovie?.id) return;
 
@@ -118,17 +131,10 @@ export const HeroSection = () => {
 
   return (
     <main className="w-full bg-white transition-colors duration-300 dark:bg-gray-950">
-      {/* HERO */}
-      <section
-        className="
-          relative h-160 w-full
-          overflow-hidden
-          bg-gray-300
-          dark:bg-gray-900
-        "
-      >
+      {/* ================= HERO SECTION ================= */}
+      <section className="relative h-160 w-full overflow-hidden bg-gray-300 dark:bg-gray-900">
         {/* BACKGROUND IMAGE */}
-        {currentMovie?.backdrop_path && (
+        {!loading && currentMovie?.backdrop_path && (
           <Image
             src={`https://image.tmdb.org/t/p/original${currentMovie.backdrop_path}`}
             alt={currentMovie.title || "Movie"}
@@ -138,45 +144,34 @@ export const HeroSection = () => {
           />
         )}
 
-        {/* DARK GRADIENT */}
-        <div
-          className="
-            absolute inset-0
-            bg-linear-to-r
-            from-black/80
-            via-black/40
-            to-transparent
-          "
-        />
+        {/* HERO BACKGROUND SKELETON */}
+        {loading && (
+          <div className="absolute inset-0 animate-pulse bg-gray-300 dark:bg-gray-800" />
+        )}
 
-        <div className="absolute inset-0 bg-black/10" />
+        {/* DARK GRADIENT */}
+        {!loading && (
+          <>
+            <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/40 to-transparent" />
+
+            <div className="absolute inset-0 bg-black/10" />
+          </>
+        )}
 
         {/* HERO CONTENT */}
-        <div
-          className="
-            relative z-10
-            mx-auto flex h-full
-            max-w-360
-            items-center
-            px-16
-          "
-        >
-          <div className="-mt-5 w-97.5 text-white">
+        <div className="relative z-10 mx-auto flex h-full max-w-360 items-center px-6 md:px-16">
+          <div className="-mt-5 w-full max-w-97.5 text-white">
             {/* LOADING */}
             {loading ? (
-              <>
-                <div className="mb-3 h-6 w-32 animate-pulse rounded bg-white/30" />
-
-                <div className="mb-5 h-12 w-72 animate-pulse rounded bg-white/30" />
-
-                <div className="mb-7 h-6 w-28 animate-pulse rounded bg-white/30" />
-
-                <div className="mb-2 h-4 w-full animate-pulse rounded bg-white/20" />
-
-                <div className="mb-2 h-4 w-11/12 animate-pulse rounded bg-white/20" />
-
-                <div className="mb-6 h-4 w-9/12 animate-pulse rounded bg-white/20" />
-              </>
+              <div className="animate-pulse">
+                <div className="mb-3 h-6 w-32 rounded bg-white/30" />
+                <div className="mb-5 h-12 w-72 max-w-full rounded bg-white/30" />
+                <div className="mb-7 h-6 w-28 rounded bg-white/30" />
+                <div className="mb-2 h-4 w-full rounded bg-white/20" />
+                <div className="mb-2 h-4 w-11/12 rounded bg-white/20" />
+                <div className="mb-6 h-4 w-9/12 rounded bg-white/20" />
+                <div className="h-12 w-40 rounded-lg bg-white/30" />
+              </div>
             ) : currentMovie ? (
               <>
                 {/* NOW PLAYING */}
@@ -203,29 +198,11 @@ export const HeroSection = () => {
                   {currentMovie.overview}
                 </p>
 
-                {/* TRAILER BUTTON */}
+                {/* WATCH TRAILER */}
                 <button
                   onClick={handleTrailer}
                   disabled={trailerLoading}
-                  className="
-                    flex items-center gap-3
-                    rounded-lg
-                    bg-white
-                    px-5 py-3
-                    text-[15px]
-                    font-medium
-                    text-gray-800
-                    transition
-
-                    hover:bg-gray-100
-
-                    disabled:cursor-not-allowed
-                    disabled:opacity-70
-
-                    dark:bg-gray-100
-                    dark:text-gray-900
-                    dark:hover:bg-white
-                  "
+                  className="flex items-center gap-3 rounded-lg bg-white px-5 py-3 text-[15px] font-medium text-gray-800 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white"
                 >
                   <PlayLogo />
 
@@ -239,61 +216,48 @@ export const HeroSection = () => {
         </div>
 
         {/* RIGHT ARROW */}
-        <button
-          onClick={handleNext}
-          disabled={movies.length === 0}
-          className="
-            absolute right-10 top-1/2 z-20
-            flex h-11 w-11
-            -translate-y-1/2
-            items-center justify-center
-            rounded-full
-            bg-white
-            text-gray-800
-            shadow-md
-            transition
-
-            hover:scale-105
-
-            disabled:cursor-not-allowed
-            disabled:opacity-50
-          "
-        >
-          <ChevronrightLogo />
-        </button>
+        {!loading && (
+          <button
+            onClick={handleNext}
+            disabled={movies.length === 0}
+            className="absolute right-10 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 shadow-md transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <ChevronrightLogo />
+          </button>
+        )}
 
         {/* DOTS */}
-        <div
-          className="
-            absolute bottom-6
-            left-1/2 z-20
-            flex
-            -translate-x-1/2
-            items-center
-            gap-2
-          "
-        >
-          {movies.map((movie, index) => (
-            <button
-              key={movie.id}
-              onClick={() => setCurrentIndex(index)}
-              aria-label={`Go to movie ${index + 1}`}
-              className={`
-                h-2 rounded-full
-                transition-all
-
-                ${index === currentIndex ? "w-8 bg-white" : "w-2 bg-white/60"}
-              `}
-            />
-          ))}
-        </div>
+        {!loading && (
+          <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
+            {movies.map((movie, index) => (
+              <button
+                key={movie.id}
+                onClick={() => setCurrentIndex(index)}
+                aria-label={`Go to movie ${index + 1}`}
+                className={`h-2 rounded-full transition-all ${
+                  index === currentIndex ? "w-8 bg-white" : "w-2 bg-white/60"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* MOVIES */}
+      {/* MOVIE SECTIONS */}
       <div className="bg-white transition-colors duration-300 dark:bg-gray-950">
-        <Upcoming />
-        <Popular />
-        <TopRated />
+        {loading ? (
+          <>
+            <SectionSkeleton />
+            <SectionSkeleton />
+            <SectionSkeleton />
+          </>
+        ) : (
+          <>
+            <Upcoming />
+            <Popular />
+            <TopRated />
+          </>
+        )}
       </div>
     </main>
   );

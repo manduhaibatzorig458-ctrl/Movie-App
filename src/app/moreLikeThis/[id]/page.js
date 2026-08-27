@@ -2,14 +2,14 @@
 
 import { Header } from "../../features/Header";
 import { Footer } from "../../features/Footer";
-import MovieDetails from "../../features/MovieDetails";
+import MoreLikeThis from "../../features/MoreLikeThis";
 
-export default function MoreLikeThisPage() {
+export default function Page() {
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen bg-white">
       <Header />
 
-      <MoreLikeThisPage />
+      <MoreLikeThis />
 
       <Footer />
     </main>
