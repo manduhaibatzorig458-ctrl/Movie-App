@@ -154,11 +154,8 @@ export default function MovieDetails() {
 
   // INFORMATION
   const year = movie.release_date ? movie.release_date.substring(0, 4) : "0";
-
   const runtimeHours = movie.runtime ? Math.floor(movie.runtime / 60) : 0;
-
   const runtimeMinutes = movie.runtime ? movie.runtime % 60 : 0;
-
   const runtime =
     movie.runtime > 0 ? `${runtimeHours}h ${runtimeMinutes}m` : "N/A";
 
@@ -591,15 +588,6 @@ export default function MovieDetails() {
     </main>
   );
 }
-
-
-
-
-
-
-
-
-
 
 
 

@@ -360,3 +360,11 @@ export default function GenrePage() {
     </main>
   );
 }
+
+
+
+
+
+
+
+

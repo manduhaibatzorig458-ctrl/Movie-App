@@ -17,7 +17,7 @@ const API_URL =
   "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1";
 
 const TOKEN =
-  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c";
+  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZF9vbmx5Il0sInZlcnNpb24iOjF9.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c";
 
 const options = {
   method: "GET",
@@ -33,7 +33,6 @@ export const HeroSection = () => {
   const [loading, setLoading] = useState(true);
   const [trailerLoading, setTrailerLoading] = useState(false);
 
-  // GET NOW PLAYING MOVIE
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -56,14 +55,12 @@ export const HeroSection = () => {
     fetchMovies();
   }, []);
 
-  // NEXT MOVIE
   const handleNext = () => {
     if (movies.length === 0) return;
 
     setCurrentIndex((prev) => (prev + 1) % movies.length);
   };
 
-  //  AUTO SLIDE
   useEffect(() => {
     if (movies.length === 0) return;
 
@@ -74,7 +71,6 @@ export const HeroSection = () => {
     return () => clearInterval(interval);
   }, [movies.length]);
 
-  //  TRAILER
   const handleTrailer = async () => {
     if (!currentMovie?.id) return;
 
@@ -92,7 +88,6 @@ export const HeroSection = () => {
 
       const data = await response.json();
 
-      // Official Trailer
       let trailer = data.results?.find(
         (video) =>
           video.site === "YouTube" &&
@@ -100,14 +95,12 @@ export const HeroSection = () => {
           video.official === true,
       );
 
-      // Normal Trailer
       if (!trailer) {
         trailer = data.results?.find(
           (video) => video.site === "YouTube" && video.type === "Trailer",
         );
       }
 
-      // Teaser
       if (!trailer) {
         trailer = data.results?.find(
           (video) => video.site === "YouTube" && video.type === "Teaser",
@@ -131,79 +124,74 @@ export const HeroSection = () => {
 
   return (
     <main className="w-full bg-white transition-colors duration-300 dark:bg-gray-950">
-      {/* ================= HERO SECTION ================= */}
-      <section className="relative h-160 w-full overflow-hidden bg-gray-300 dark:bg-gray-900">
-        {/* BACKGROUND IMAGE */}
+      {" "}
+      <section className="relative h-125 w-full overflow-hidden bg-gray-300 sm:h-135 md:h-145 lg:h-160 xl:h-170 dark:bg-gray-900">
         {!loading && currentMovie?.backdrop_path && (
           <Image
             src={`https://image.tmdb.org/t/p/original${currentMovie.backdrop_path}`}
             alt={currentMovie.title || "Movie"}
             fill
             priority
-            className="object-cover"
+            sizes="100vw"
+            className="object-cover object-center"
           />
         )}
 
-        {/* HERO BACKGROUND SKELETON */}
         {loading && (
           <div className="absolute inset-0 animate-pulse bg-gray-300 dark:bg-gray-800" />
         )}
 
-        {/* DARK GRADIENT */}
         {!loading && (
           <>
-            <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-r from-black/90 via-black/55 to-black/10 md:from-black/80 md:via-black/40 md:to-transparent" />
 
-            <div className="absolute inset-0 bg-black/10" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-black/50 to-transparent md:h-48" />
           </>
         )}
 
-        {/* HERO CONTENT */}
-        <div className="relative z-10 mx-auto flex h-full max-w-360 items-center px-6 md:px-16">
-          <div className="-mt-5 w-full max-w-97.5 text-white">
-            {/* LOADING */}
+        <div className="relative z-10 mx-auto flex h-full w-full max-w-360 items-center px-5 sm:px-8 md:px-10 lg:px-16 xl:px-20">
+          <div className="-mt-4 w-full max-w-85 text-white sm:max-w-105 md:-mt-8 md:max-w-117.5 lg:max-w-125">
             {loading ? (
               <div className="animate-pulse">
-                <div className="mb-3 h-6 w-32 rounded bg-white/30" />
-                <div className="mb-5 h-12 w-72 max-w-full rounded bg-white/30" />
-                <div className="mb-7 h-6 w-28 rounded bg-white/30" />
-                <div className="mb-2 h-4 w-full rounded bg-white/20" />
-                <div className="mb-2 h-4 w-11/12 rounded bg-white/20" />
-                <div className="mb-6 h-4 w-9/12 rounded bg-white/20" />
-                <div className="h-12 w-40 rounded-lg bg-white/30" />
+                <div className="mb-3 h-5 w-28 rounded bg-white/30 sm:h-6 sm:w-32" />
+                <div className="mb-4 h-10 w-11/12 rounded bg-white/30 sm:h-12 md:h-14" />
+                <div className="mb-6 h-5 w-24 rounded bg-white/30" />
+                <div className="mb-2 h-3.5 w-full rounded bg-white/20" />
+                <div className="mb-2 h-3.5 w-11/12 rounded bg-white/20" />
+                <div className="mb-6 h-3.5 w-9/12 rounded bg-white/20" />
+
+                <div className="h-11 w-36 rounded-lg bg-white/30 sm:h-12 sm:w-40" />
               </div>
             ) : currentMovie ? (
               <>
-                {/* NOW PLAYING */}
-                <p className="mb-1 text-lg">Now Playing:</p>
+                <p className="mb-1 text-sm sm:text-base md:text-lg">
+                  Now Playing:
+                </p>
 
-                {/* TITLE */}
-                <h2 className="mb-3 text-[40px] font-bold leading-tight">
+                <h2 className="mb-3 line-clamp-2 text-[30px] font-bold leading-[1.1] sm:text-[36px] md:text-[42px] lg:text-[48px]">
                   {currentMovie.title}
                 </h2>
 
-                {/* RATING */}
-                <div className="mb-7 flex items-center gap-2">
+                <div className="mb-5 flex items-center gap-2 sm:mb-6 md:mb-7">
                   <StarLogo />
 
-                  <span className="text-[19px] font-semibold">
+                  <span className="text-base font-semibold sm:text-lg md:text-[19px]">
                     {currentMovie.vote_average?.toFixed(1)}
                   </span>
 
-                  <span className="text-[17px] text-gray-300">/10</span>
+                  <span className="text-sm text-gray-300 sm:text-base md:text-[17px]">
+                    /10
+                  </span>
                 </div>
 
-                {/* DESCRIPTION */}
-                <p className="mb-6 text-sm leading-[1.45] text-gray-200">
+                <p className="mb-5 line-clamp-4 text-[13px] leading-normal text-gray-200 sm:text-sm md:mb-6">
                   {currentMovie.overview}
                 </p>
 
-                {/* WATCH TRAILER */}
                 <button
                   onClick={handleTrailer}
                   disabled={trailerLoading}
-                  className="flex items-center gap-3 rounded-lg bg-white px-5 py-3 text-[15px] font-medium text-gray-800 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white"
-                >
+                  className="flex h-10 items-center gap-2 rounded-lg bg-white px-4 text-[13px] font-medium text-gray-800 transition hover:bg-gray-100 active:scale-[0.98] sm:h-11 sm:gap-3 sm:px-5 sm:text-sm md:h-12 md:text-[15px] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
                   <PlayLogo />
 
                   {trailerLoading ? "Loading..." : "Watch Trailer"}
@@ -215,36 +203,33 @@ export const HeroSection = () => {
           </div>
         </div>
 
-        {/* RIGHT ARROW */}
         {!loading && (
           <button
             onClick={handleNext}
             disabled={movies.length === 0}
-            className="absolute right-10 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 shadow-md transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+            aria-label="Next movie"
+            className="absolute right-4 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 shadow-md transition hover:scale-105 active:scale-95 sm:right-6 sm:h-10 sm:w-10 md:right-8 md:h-11 md:w-11 lg:right-10 disabled:cursor-not-allowed disabled:opacity-50">
             <ChevronrightLogo />
           </button>
         )}
 
-        {/* DOTS */}
         {!loading && (
-          <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
+          <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5 sm:bottom-6 sm:gap-2">
             {movies.map((movie, index) => (
               <button
                 key={movie.id}
                 onClick={() => setCurrentIndex(index)}
                 aria-label={`Go to movie ${index + 1}`}
-                className={`h-2 rounded-full transition-all ${
-                  index === currentIndex ? "w-8 bg-white" : "w-2 bg-white/60"
-                }`}
-              />
+                className={`h-1.5 rounded-full transition-all sm:h-2 ${
+                  index === currentIndex
+                    ? "w-6 bg-white sm:w-8"
+                    : "w-1.5 bg-white/60 sm:w-2"
+                }`}/>
             ))}
           </div>
         )}
       </section>
-
-      {/* MOVIE SECTIONS */}
-      <div className="bg-white transition-colors duration-300 dark:bg-gray-950">
+      <div className="w-full bg-white transition-colors duration-300 dark:bg-gray-950">
         {loading ? (
           <>
             <SectionSkeleton />

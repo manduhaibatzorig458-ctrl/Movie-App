@@ -12,7 +12,7 @@ const options = {
   headers: {
     accept: "application/json",
     Authorization:
-      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsImNjb3BlcyI6WyJhcGlfcmVhZF9jb250ZW50Il0sInZlcnNpb24iOjF9.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c",
+      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c",
   },
 };
 
@@ -20,9 +20,10 @@ const MovieCard = ({ movie, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className="w-full cursor-pointer overflow-hidden rounded-lg bg-[#f4f4f4] transition duration-200 hover:scale-[1.02] dark:bg-gray-900"
+      className="w-full min-w-0 cursor-pointer overflow-hidden rounded-lg bg-[#f4f4f4] transition duration-200 hover:scale-[1.02] dark:bg-gray-900"
     >
-      <div className="h-81 w-full overflow-hidden rounded-t-lg bg-gray-200 dark:bg-gray-800">
+      {" "}
+      <div className="aspect-2/3 w-full overflow-hidden rounded-t-lg bg-gray-200 dark:bg-gray-800">
         <Image
           src={
             movie.poster_path
@@ -32,26 +33,22 @@ const MovieCard = ({ movie, onClick }) => {
           alt={movie.title || "Movie poster"}
           width={216}
           height={324}
+          sizes="(max-width: 639px) 45vw, (max-width: 767px) 30vw, (max-width: 1023px) 22vw, (max-width: 1279px) 18vw, 16vw"
           className="block h-full w-full object-cover"
-        />
+        />{" "}
       </div>
-
-      <div className="min-h-25 bg-[#f4f4f4] px-2.5 pb-3.75 pt-3.5 dark:bg-gray-900">
-        <div className="mb-2 flex items-center text-[14px] text-gray-700 dark:text-gray-300">
+      <div className="min-h-23 bg-[#f4f4f4] px-2 pb-3 pt-2.5 sm:min-h-25 sm:px-2.5 sm:pt-3 dark:bg-gray-900">
+        <div className="mb-1.5 flex items-center text-[12px] text-gray-700 sm:mb-2 sm:text-[14px] dark:text-gray-300">
           <StarLogo />
 
           <span className="ml-1">
-            {movie.vote_average
-              ? movie.vote_average.toFixed(1)
-              : "N/A"}
+            {movie.vote_average ? movie.vote_average.toFixed(1) : "N/A"}
           </span>
 
-          <span className="ml-1 text-gray-500 dark:text-gray-500">
-            /10
-          </span>
+          <span className="ml-1 text-gray-500 dark:text-gray-500">/10</span>
         </div>
 
-        <h3 className="m-0 text-[19px] font-normal leading-[1.4] text-[#151515] dark:text-white">
+        <h3 className="m-0 line-clamp-2 text-[14px] font-normal leading-[1.35] text-[#151515] sm:text-[16px] md:text-[17px] lg:text-[18px] dark:text-white">
           {movie.title}
         </h3>
       </div>
@@ -76,17 +73,12 @@ export const Upcoming = ({ showSeeMore = true }) => {
 
         const url = `https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=${page}`;
 
-        console.log("Fetching Upcoming page:", page);
-
         const response = await fetch(url, options);
         const data = await response.json();
 
-        console.log("UPCOMING STATUS:", response.status);
-        console.log("UPCOMING DATA:", data);
-
         if (!response.ok) {
           throw new Error(
-            data.status_message || `TMDB Error: ${response.status}`
+            data.status_message || `TMDB Error: ${response.status}`,
           );
         }
 
@@ -110,14 +102,11 @@ export const Upcoming = ({ showSeeMore = true }) => {
   };
 
   const handleMovieClick = (movieId) => {
-    console.log("Clicked movie ID:", movieId);
     router.push(`/movie/${movieId}`);
   };
 
   const handlePageChange = (newPage) => {
-    if (newPage < 1 || newPage > totalPages) {
-      return;
-    }
+    if (newPage < 1 || newPage > totalPages) return;
 
     setPage(newPage);
 
@@ -128,38 +117,38 @@ export const Upcoming = ({ showSeeMore = true }) => {
   };
 
   const handlePrevious = () => {
-    if (page > 1) {
-      setPage(page - 1);
+    if (page <= 1) return;
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
+    setPage(page - 1);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const handleNext = () => {
-    if (page < totalPages) {
-      setPage(page + 1);
+    if (page >= totalPages) return;
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
+    setPage(page + 1);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
-    <section className="w-full bg-white px-17.5 pb-10 transition-colors duration-300 dark:bg-gray-950">
-      <div className="my-8 mb-8.75 flex items-center justify-between">
-        <h2 className="text-[28px] font-bold text-black dark:text-white">
+    <section className="w-full bg-white px-4 pb-8 transition-colors duration-300 sm:px-6 sm:pb-10 md:px-8 lg:px-10 xl:px-16 2xl:px-17.5 dark:bg-gray-950">
+      <div className="mb-5 flex items-center justify-between sm:mb-6 md:mb-7 lg:mb-8">
+        <h2 className="text-[22px] font-bold text-black sm:text-[24px] md:text-[26px] lg:text-[28px] dark:text-white">
           Upcoming
         </h2>
 
         {showSeeMore && (
           <button
             onClick={navigateToUpcomingPage}
-            className="flex items-center gap-2 text-sm text-[#4338ca] transition hover:underline dark:text-indigo-400"
+            className="flex shrink-0 items-center gap-1.5 text-xs text-[#4338ca] transition hover:underline sm:gap-2 sm:text-sm dark:text-indigo-400"
           >
             <span>See more</span>
             <ArrowrightLogo />
@@ -168,18 +157,14 @@ export const Upcoming = ({ showSeeMore = true }) => {
       </div>
 
       {loading && (
-        <div className="flex min-h-75 items-center justify-center">
-          <p className="text-gray-500 dark:text-gray-400">
-            Loading...
-          </p>
+        <div className="flex min-h-60 items-center justify-center sm:min-h-75">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
         </div>
       )}
 
       {!loading && error && (
-        <div className="flex min-h-75 flex-col items-center justify-center gap-3">
-          <p className="text-red-500 dark:text-red-400">
-            {error}
-          </p>
+        <div className="flex min-h-60 flex-col items-center justify-center gap-3 px-4 text-center sm:min-h-75">
+          <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
 
           <button
             onClick={() => window.location.reload()}
@@ -192,7 +177,7 @@ export const Upcoming = ({ showSeeMore = true }) => {
 
       {!loading && !error && movies.length > 0 && (
         <>
-          <div className="grid grid-cols-5 gap-x-8 gap-y-8">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 sm:gap-x-4 sm:gap-y-6 md:grid-cols-4 md:gap-x-5 md:gap-y-7 lg:grid-cols-5 lg:gap-x-6 lg:gap-y-8 xl:grid-cols-5 xl:gap-x-8 xl:gap-y-8">
             {movies.slice(0, 10).map((movie) => (
               <MovieCard
                 key={movie.id}
@@ -203,25 +188,24 @@ export const Upcoming = ({ showSeeMore = true }) => {
           </div>
 
           {!showSeeMore && (
-            <div className="mt-8 flex h-10 items-center justify-end gap-2 text-[14px]">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:mt-8 sm:justify-end">
               <button
                 onClick={handlePrevious}
                 disabled={page === 1}
-                className={`flex h-10 items-center justify-center gap-1 rounded-md border border-[#E4E4E7] px-3 dark:border-gray-700 ${page === 1 ? "cursor-not-allowed text-gray-300 dark:text-gray-700" : "cursor-pointer text-[#09090B] hover:bg-zinc-100 dark:text-gray-200 dark:hover:bg-gray-800"}`}
+                className={`flex h-9 items-center justify-center gap-1 rounded-md border border-[#E4E4E7] px-2.5 text-xs sm:h-10 sm:px-3 sm:text-sm dark:border-gray-700 ${
+                  page === 1
+                    ? "cursor-not-allowed text-gray-300 dark:text-gray-700"
+                    : "cursor-pointer text-[#09090B] hover:bg-zinc-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                }`}
               >
-                <span className="text-[18px] leading-none">
-                  ‹
-                </span>
-
-                <span className="font-inter text-[14px] font-medium leading-5">
-                  Previous
-                </span>
+                <span className="text-[18px] leading-none">‹</span>
+                <span className="hidden sm:inline">Previous</span>
               </button>
 
-              <div className="flex h-10 items-center gap-1">
+              <div className="flex h-9 items-center gap-0.5 sm:h-10 sm:gap-1">
                 <button
                   onClick={() => handlePageChange(page)}
-                  className="flex h-10 w-10 items-center justify-center rounded-md border border-[#E4E4E7] bg-white text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-md border border-[#E4E4E7] bg-white text-xs text-black sm:h-10 sm:w-10 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                 >
                   {page}
                 </button>
@@ -229,7 +213,7 @@ export const Upcoming = ({ showSeeMore = true }) => {
                 {page + 1 <= totalPages && (
                   <button
                     onClick={() => handlePageChange(page + 1)}
-                    className="flex h-10 w-10 items-center justify-center rounded-md text-[#09090B] transition hover:bg-zinc-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                    className="flex h-9 w-9 items-center justify-center rounded-md text-xs text-[#09090B] transition hover:bg-zinc-100 sm:h-10 sm:w-10 sm:text-sm dark:text-gray-200 dark:hover:bg-gray-800"
                   >
                     {page + 1}
                   </button>
@@ -238,7 +222,7 @@ export const Upcoming = ({ showSeeMore = true }) => {
                 {page + 4 < totalPages && (
                   <button
                     disabled
-                    className="flex h-10 w-10 cursor-default items-center justify-center rounded-md text-[#09090B] dark:text-gray-300"
+                    className="flex h-9 w-9 cursor-default items-center justify-center rounded-md text-xs text-[#09090B] sm:h-10 sm:w-10 sm:text-sm dark:text-gray-300"
                   >
                     ...
                   </button>
@@ -247,7 +231,7 @@ export const Upcoming = ({ showSeeMore = true }) => {
                 {page + 4 <= totalPages && (
                   <button
                     onClick={() => handlePageChange(page + 4)}
-                    className="flex h-10 w-10 items-center justify-center rounded-md text-[#09090B] transition hover:bg-zinc-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                    className="flex h-9 w-9 items-center justify-center rounded-md text-xs text-[#09090B] transition hover:bg-zinc-100 sm:h-10 sm:w-10 sm:text-sm dark:text-gray-200 dark:hover:bg-gray-800"
                   >
                     {page + 4}
                   </button>
@@ -257,15 +241,14 @@ export const Upcoming = ({ showSeeMore = true }) => {
               <button
                 onClick={handleNext}
                 disabled={page === totalPages}
-                className={`flex h-10 items-center justify-center gap-1 rounded-md border border-[#E4E4E7] px-3 dark:border-gray-700 ${page === totalPages ? "cursor-not-allowed text-gray-300 dark:text-gray-700" : "cursor-pointer text-[#09090B] hover:bg-zinc-100 dark:text-gray-200 dark:hover:bg-gray-800"}`}
+                className={`flex h-9 items-center justify-center gap-1 rounded-md border border-[#E4E4E7] px-2.5 text-xs sm:h-10 sm:px-3 sm:text-sm dark:border-gray-700 ${
+                  page === totalPages
+                    ? "cursor-not-allowed text-gray-300 dark:text-gray-700"
+                    : "cursor-pointer text-[#09090B] hover:bg-zinc-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                }`}
               >
-                <span className="font-inter text-[14px] font-medium leading-5">
-                  Next
-                </span>
-
-                <span className="text-[18px] leading-none">
-                  ›
-                </span>
+                <span className="hidden sm:inline">Next</span>
+                <span className="text-[18px] leading-none">›</span>
               </button>
             </div>
           )}
@@ -273,8 +256,8 @@ export const Upcoming = ({ showSeeMore = true }) => {
       )}
 
       {!loading && !error && movies.length === 0 && (
-        <div className="flex min-h-75 items-center justify-center">
-          <p className="text-gray-500 dark:text-gray-400">
+        <div className="flex min-h-60 items-center justify-center sm:min-h-75">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             No movies found.
           </p>
         </div>
