@@ -42,12 +42,6 @@ export default function GenrePage() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // ============================
-  // URL-EES GENRE AVAH
-  // /genre/28
-  // /genre/28-16
-  // /genre/28-16-35
-  // ============================
   useEffect(() => {
     if (!genreParam) return;
 
@@ -60,21 +54,14 @@ export default function GenrePage() {
     setPage(1);
   }, [genreParam]);
 
-  // ============================
   // SELECTED GENRE NAMES
-  // ============================
   const selectedGenreNames = genres
     .filter((genre) => selectedGenres.includes(genre.id))
     .map((genre) => genre.name);
 
   const genreName =
-    selectedGenreNames.length > 0
-      ? selectedGenreNames.join(" + ")
-      : "Movies";
+    selectedGenreNames.length > 0 ? selectedGenreNames.join(" + ") : "Movies";
 
-  // ============================
-  // GET MOVIES
-  // ============================
   useEffect(() => {
     if (selectedGenres.length === 0) {
       setMovies([]);
@@ -127,26 +114,18 @@ export default function GenrePage() {
     return () => controller.abort();
   }, [selectedGenres, page]);
 
-  // ============================
   // MOVIE CLICK
-  // ============================
   const handleMovieClick = (movieId) => {
     router.push(`/movie/${movieId}`);
   };
 
-  // ============================
   // GENRE ADD / REMOVE
-  // ============================
   const handleGenreClick = (id) => {
     let newGenres;
 
     if (selectedGenres.includes(id)) {
-      // SONGOSON GENRE-IIG HASNA
-      newGenres = selectedGenres.filter(
-        (genreId) => genreId !== id,
-      );
+      newGenres = selectedGenres.filter((genreId) => genreId !== id);
     } else {
-      // SHINE GENRE NEMNE
       newGenres = [...selectedGenres, id];
     }
 
@@ -158,13 +137,10 @@ export default function GenrePage() {
       return;
     }
 
-    // URL-IIG SHINECHLENE
     router.push(`/genre/${newGenres.join("-")}`);
   };
 
-  // ============================
   // PREVIOUS PAGE
-  // ============================
   const previousPage = () => {
     if (page <= 1) return;
 
@@ -176,9 +152,7 @@ export default function GenrePage() {
     });
   };
 
-  // ============================
   // NEXT PAGE
-  // ============================
   const nextPage = () => {
     if (page >= totalPages) return;
 
@@ -196,20 +170,14 @@ export default function GenrePage() {
       <Header />
 
       <section className="mx-auto w-full max-w-360 flex-1 px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10">
-        {/* ============================
-            MOBILE + DESKTOP TITLE
-        ============================ */}
+        {/* MOBILE + DESKTOP TITLE */}
         <div>
           <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
             Search filter
           </h1>
         </div>
 
-        {/* ============================
-            GENRE FILTER
-            MOBILE DEER DEED HESGEE
-            DESKTOP DEER BARUUN TALD
-        ============================ */}
+        {/* GENRE FILTER {MOBILE DEER DEED HESGEE, DESKTOP DEER BARUUN TALD}  */}
         <div className="mt-6 lg:hidden">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
             Search by genre
@@ -221,17 +189,13 @@ export default function GenrePage() {
 
           <div className="mt-4 flex flex-wrap gap-2">
             {genres.map((genre) => {
-              const isSelected = selectedGenres.includes(
-                genre.id,
-              );
+              const isSelected = selectedGenres.includes(genre.id);
 
               return (
                 <button
                   key={genre.id}
                   type="button"
-                  onClick={() =>
-                    handleGenreClick(genre.id)
-                  }
+                  onClick={() => handleGenreClick(genre.id)}
                   className={`flex items-center gap-1 rounded-full border px-3 py-1 text-[10px] font-medium transition ${
                     isSelected
                       ? "border-[#4F46E5] bg-[#4F46E5] text-white"
@@ -240,25 +204,19 @@ export default function GenrePage() {
                 >
                   {genre.name}
 
-                  <span>
-                    {isSelected ? "✓" : "›"}
-                  </span>
+                  <span>{isSelected ? "✓" : "›"}</span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* ============================
-            SELECTED GENRES
-        ============================ */}
+        {/* SELECTED GENRES */}
         {selectedGenres.length > 0 && (
           <div className="mt-6">
             <div className="flex flex-wrap gap-2">
               {selectedGenres.map((id) => {
-                const genre = genres.find(
-                  (item) => item.id === id,
-                );
+                const genre = genres.find((item) => item.id === id);
 
                 if (!genre) return null;
 
@@ -266,16 +224,12 @@ export default function GenrePage() {
                   <button
                     key={genre.id}
                     type="button"
-                    onClick={() =>
-                      handleGenreClick(genre.id)
-                    }
+                    onClick={() => handleGenreClick(genre.id)}
                     className="flex items-center gap-2 rounded-full bg-[#4F46E5] px-3 py-1.5 text-xs font-medium text-white transition hover:bg-[#4338CA]"
                   >
                     {genre.name}
 
-                    <span className="text-sm">
-                      ×
-                    </span>
+                    <span className="text-sm">×</span>
                   </button>
                 );
               })}
@@ -283,9 +237,7 @@ export default function GenrePage() {
           </div>
         )}
 
-        {/* ============================
-            MOVIE TITLE
-        ============================ */}
+        {/* MOVIE TITLE */}
         <div className="mt-8">
           <h2 className="text-lg font-semibold text-gray-900 sm:text-xl dark:text-white">
             {genreName} Movies
@@ -296,31 +248,27 @@ export default function GenrePage() {
           </p>
         </div>
 
-        {/* ============================
-            CONTENT
-        ============================ */}
+        {/* CONTENT */}
         <div className="mt-6 flex flex-col gap-10 lg:flex-row">
           {/* MOVIE LIST */}
           <div className="min-w-0 flex-1">
             {/* LOADING */}
             {loading && (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 lg:gap-5">
-                {Array.from({ length: 10 }).map(
-                  (_, index) => (
-                    <div
-                      key={index}
-                      className="overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-900"
-                    >
-                      <div className="aspect-[2/3] w-full animate-pulse bg-gray-200 dark:bg-gray-800" />
+                {Array.from({ length: 10 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-900"
+                  >
+                    <div className="aspect-2/3 w-full animate-pulse bg-gray-200 dark:bg-gray-800" />
 
-                      <div className="space-y-2 p-3">
-                        <div className="h-3 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+                    <div className="space-y-2 p-3">
+                      <div className="h-3 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
 
-                        <div className="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
-                      </div>
+                      <div className="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
                     </div>
-                  ),
-                )}
+                  </div>
+                ))}
               </div>
             )}
 
@@ -338,19 +286,15 @@ export default function GenrePage() {
                   <button
                     key={movie.id}
                     type="button"
-                    onClick={() =>
-                      handleMovieClick(movie.id)
-                    }
+                    onClick={() => handleMovieClick(movie.id)}
                     className="group min-w-0 overflow-hidden rounded-lg bg-gray-100 text-left transition hover:-translate-y-1 hover:shadow-lg dark:bg-gray-900"
                   >
                     {/* POSTER */}
-                    <div className="aspect-[2/3] w-full overflow-hidden">
+                    <div className="aspect-2/3 w-full overflow-hidden">
                       {movie.poster_path ? (
                         <img
                           src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                          alt={
-                            movie.title || "Movie poster"
-                          }
+                          alt={movie.title || "Movie poster"}
                           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                         />
                       ) : (
@@ -363,9 +307,7 @@ export default function GenrePage() {
                     {/* INFO */}
                     <div className="p-2.5 sm:p-3">
                       <div className="flex items-center gap-1 text-[10px] sm:text-xs">
-                        <span className="text-yellow-400">
-                          ★
-                        </span>
+                        <span className="text-yellow-400">★</span>
 
                         <span className="text-gray-600 dark:text-gray-400">
                           {movie.vote_average
@@ -420,9 +362,7 @@ export default function GenrePage() {
             )}
           </div>
 
-          {/* ============================
-              DESKTOP GENRE SIDEBAR
-          ============================ */}
+          {/* DESKTOP GENRE SIDEBAR */}
           <aside className="hidden w-64 shrink-0 border-l border-gray-200 pl-8 lg:block dark:border-gray-700">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Search by genre
@@ -434,16 +374,13 @@ export default function GenrePage() {
 
             <div className="mt-5 flex flex-wrap gap-2">
               {genres.map((genre) => {
-                const isSelected =
-                  selectedGenres.includes(genre.id);
+                const isSelected = selectedGenres.includes(genre.id);
 
                 return (
                   <button
                     key={genre.id}
                     type="button"
-                    onClick={() =>
-                      handleGenreClick(genre.id)
-                    }
+                    onClick={() => handleGenreClick(genre.id)}
                     className={`flex items-center gap-1 rounded-full border px-3 py-1 text-xs transition ${
                       isSelected
                         ? "border-[#4F46E5] bg-[#4F46E5] text-white"
@@ -452,9 +389,7 @@ export default function GenrePage() {
                   >
                     {genre.name}
 
-                    <span>
-                      {isSelected ? "✓" : "›"}
-                    </span>
+                    <span>{isSelected ? "✓" : "›"}</span>
                   </button>
                 );
               })}
@@ -468,4 +403,3 @@ export default function GenrePage() {
     </main>
   );
 }
-

@@ -17,7 +17,7 @@ const API_URL =
   "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1";
 
 const TOKEN =
-  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZF9vbmx5Il0sInZlcnNpb24iOjF9.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c";
+  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c";
 
 const options = {
   method: "GET",
@@ -191,7 +191,8 @@ export const HeroSection = () => {
                 <button
                   onClick={handleTrailer}
                   disabled={trailerLoading}
-                  className="flex h-10 items-center gap-2 rounded-lg bg-white px-4 text-[13px] font-medium text-gray-800 transition hover:bg-gray-100 active:scale-[0.98] sm:h-11 sm:gap-3 sm:px-5 sm:text-sm md:h-12 md:text-[15px] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white">
+                  className="flex h-10 items-center gap-2 rounded-lg bg-white px-4 text-[13px] font-medium text-gray-800 transition hover:bg-gray-100 active:scale-[0.98] sm:h-11 sm:gap-3 sm:px-5 sm:text-sm md:h-12 md:text-[15px] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white"
+                >
                   <PlayLogo />
 
                   {trailerLoading ? "Loading..." : "Watch Trailer"}
@@ -208,7 +209,8 @@ export const HeroSection = () => {
             onClick={handleNext}
             disabled={movies.length === 0}
             aria-label="Next movie"
-            className="absolute right-4 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 shadow-md transition hover:scale-105 active:scale-95 sm:right-6 sm:h-10 sm:w-10 md:right-8 md:h-11 md:w-11 lg:right-10 disabled:cursor-not-allowed disabled:opacity-50">
+            className="absolute right-4 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 shadow-md transition hover:scale-105 active:scale-95 sm:right-6 sm:h-10 sm:w-10 md:right-8 md:h-11 md:w-11 lg:right-10 disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <ChevronrightLogo />
           </button>
         )}
@@ -224,7 +226,8 @@ export const HeroSection = () => {
                   index === currentIndex
                     ? "w-6 bg-white sm:w-8"
                     : "w-1.5 bg-white/60 sm:w-2"
-                }`}/>
+                }`}
+              />
             ))}
           </div>
         )}
@@ -249,10 +252,3 @@ export const HeroSection = () => {
 };
 
 export default HeroSection;
-
-
-
-
-
-
-

@@ -7,6 +7,8 @@ import VectorLogo from "../Icons/VectorLogo";
 import ChevrondownLogo from "../Icons/ChevrondownLogo";
 import SearchLogo from "../Icons/SearchLogo";
 import MoonLogo from "../Icons/MoonLogo";
+import ChevrondownWhiteLogo from "../Icons/ChevrondownWhiteLogo"
+import MoonWhiteLogo from "../Icons/MoonWhiteLogo"
 
 const TOKEN =
   "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNzhmMWQ1MDg2ZWRmOTY1NzQ5NjEyODdiZDI3Y2MzZSIsIm5iZiI6MTc4NjU4NTA5MC41NTIsInN1YiI6IjZhN2QyMDAyMTVhZWU3YzFlNmI3YWNhYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5kK_xecc4fk2ymkk7RxsglhtFOIlUAlTRU6TWB4Nr5c";
@@ -43,7 +45,6 @@ export const Header = () => {
 
   // MOBILE SEARCH MODE
   const [mobileSearch, setMobileSearch] = useState(false);
-
   // DARK MODE
   const [dark, setDark] = useState(false);
 
@@ -127,35 +128,25 @@ export const Header = () => {
     };
   }, [searchValue]);
 
-// CLICK OUTSIDE
+  // CLICK OUTSIDE
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(event.target)
-      ) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
         setSearchOpen(false);
       }
 
-      if (
-        genreRef.current &&
-        !genreRef.current.contains(event.target)
-      ) {
+      if (genreRef.current && !genreRef.current.contains(event.target)) {
         setGenreOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside,
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-// SEARCH PAGE
+  // SEARCH PAGE
   const handleSearch = () => {
     const value = searchValue.trim();
 
@@ -168,7 +159,7 @@ export const Header = () => {
     router.push(`/search/${encodeURIComponent(value)}`);
   };
 
-// MOVIE DETIAL
+  // MOVIE DETIAL
   const handleMovieClick = (movieId) => {
     setSearchOpen(false);
     setGenreOpen(false);
@@ -177,7 +168,7 @@ export const Header = () => {
     router.push(`/movie/${movieId}`);
   };
 
-// GENRE PAGE
+  // GENRE PAGE
   const handleHeaderGenre = (genreId) => {
     setGenreOpen(false);
     setSearchOpen(false);
@@ -186,7 +177,7 @@ export const Header = () => {
     router.push(`/genre/${genreId}`);
   };
 
-// CLOSE SEARCH
+  // CLOSE SEARCH
   const closeMobileSearch = () => {
     setMobileSearch(false);
     setSearchOpen(false);
@@ -197,13 +188,12 @@ export const Header = () => {
 
   return (
     <header className="relative z-100 h-17 w-full border-b border-gray-200 bg-white transition-colors duration-300 dark:border-gray-700 dark:bg-gray-950">
-      {/* =====================================
-          NORMAL HEADER
-      ===================================== */}
+      {/* NORMAL HEADER */}
 
       {!mobileSearch && (
         <div className="mx-auto flex h-full w-full max-w-360 items-center px-5 sm:px-6 md:px-10">
           {/* LOGO */}
+
           <button
             type="button"
             onClick={() => router.push("/")}
@@ -218,10 +208,7 @@ export const Header = () => {
 
           {/* RIGHT SIDE */}
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            {/* =========================
-                SEARCH
-                GENRE-IIN URD
-            ========================= */}
+            {/* SEARCH-GENRE-IIN URD */}
 
             {/* MOBILE SEARCH BUTTON */}
             <button
@@ -237,10 +224,7 @@ export const Header = () => {
             </button>
 
             {/* DESKTOP SEARCH */}
-            <div
-              ref={searchRef}
-              className="relative hidden lg:block"
-            >
+            <div ref={searchRef} className="relative hidden lg:block">
               <div
                 className={`flex h-10 w-64 items-center rounded-lg border bg-white transition xl:w-80 ${
                   searchOpen
@@ -291,15 +275,8 @@ export const Header = () => {
               )}
             </div>
 
-            {/* =========================
-                GENRE
-                SEARCH-IIN DARAА
-            ========================= */}
-
-            <div
-              ref={genreRef}
-              className="relative hidden shrink-0 md:block"
-            >
+            {/* GENRE-SEARCH-IIN DARAА */}
+            <div ref={genreRef} className="relative hidden shrink-0 md:block">
               <button
                 type="button"
                 onClick={() => {
@@ -339,9 +316,7 @@ export const Header = () => {
                       <button
                         key={genre.id}
                         type="button"
-                        onClick={() =>
-                          handleHeaderGenre(genre.id)
-                        }
+                        onClick={() => handleHeaderGenre(genre.id)}
                         className="group flex h-8 items-center gap-2 rounded-full border border-gray-300 bg-white px-3 text-[12px] font-medium text-gray-900 transition hover:border-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
                       >
                         <span>{genre.name}</span>
@@ -356,14 +331,11 @@ export const Header = () => {
               )}
             </div>
 
-            {/* =========================
-                DARK MODE
-            ========================= */}
-
+            {/* DARK MODE */}
             <button
               type="button"
               onClick={toggleDarkMode}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+              className="flex h-9 w-9 shrink-0 items-center px-2.5 justify-centers rounded-lg border border-gray-200 bg-white transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
               aria-label="Toggle dark mode"
             >
               <MoonLogo />
@@ -372,25 +344,14 @@ export const Header = () => {
         </div>
       )}
 
-      {/* =====================================
-          MOBILE SEARCH MODE
-          GENRE → SEARCH → X
-      ===================================== */}
-
+      {/* MOBILE SEARCH MODE = GENRE → SEARCH → X */}
       {mobileSearch && (
         <div
           ref={searchRef}
           className="relative flex h-full w-full items-center gap-3 px-4 sm:px-6"
         >
-          {/* =========================
-              GENRE BUTTON
-              BACK BUTTON-IIN OROND
-          ========================= */}
-
-          <div
-            ref={genreRef}
-            className="relative shrink-0"
-          >
+          {/* GENRE BUTTON = BACK BUTTON-IIN OROND */}
+          <div ref={genreRef} className="relative shrink-0">
             <button
               type="button"
               onClick={() => {
@@ -399,7 +360,6 @@ export const Header = () => {
               }}
               className="flex h-9 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-[13px] font-medium text-gray-800 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
             >
-
               <ChevrondownLogo
                 className={`transition-transform duration-200 ${
                   genreOpen ? "rotate-180" : ""
@@ -425,9 +385,7 @@ export const Header = () => {
                     <button
                       key={genre.id}
                       type="button"
-                      onClick={() =>
-                        handleHeaderGenre(genre.id)
-                      }
+                      onClick={() => handleHeaderGenre(genre.id)}
                       className="group flex h-8 items-center gap-2 rounded-full border border-gray-300 bg-white px-3 text-[12px] font-medium text-gray-900 transition hover:border-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
                     >
                       <span>{genre.name}</span>
@@ -442,10 +400,7 @@ export const Header = () => {
             )}
           </div>
 
-          {/* =========================
-              SEARCH INPUT
-          ========================= */}
-
+          {/* SEARCH INPUT*/}
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <SearchLogo className="shrink-0" />
 
@@ -480,10 +435,7 @@ export const Header = () => {
             />
           </div>
 
-          {/* =========================
-              CLOSE BUTTON
-          ========================= */}
-
+          {/* CLOSE BUTTON */}
           <button
             type="button"
             onClick={closeMobileSearch}
@@ -509,10 +461,7 @@ export const Header = () => {
   );
 };
 
-/* =====================================
-    SEARCH DROPDOWN
-===================================== */
-
+/* SEARCH DROPDOWN */
 const SearchDropdown = ({
   loading,
   searchResults,
@@ -567,14 +516,10 @@ const SearchDropdown = ({
                 </p>
 
                 <div className="mt-1 flex items-center gap-2">
-                  <span className="text-[11px] text-yellow-400">
-                    ★
-                  </span>
+                  <span className="text-[11px] text-yellow-400">★</span>
 
                   <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                    {movie.vote_average
-                      ? movie.vote_average.toFixed(1)
-                      : "0.0"}
+                    {movie.vote_average ? movie.vote_average.toFixed(1) : "0.0"}
                   </span>
 
                   <span className="text-gray-300">•</span>
@@ -588,9 +533,7 @@ const SearchDropdown = ({
               </div>
 
               {/* ARROW */}
-              <span className="shrink-0 text-[18px] text-gray-400">
-                ›
-              </span>
+              <span className="shrink-0 text-[18px] text-gray-400">›</span>
             </button>
           ))}
 
@@ -608,10 +551,3 @@ const SearchDropdown = ({
     </div>
   );
 };
-
-
-
-
-
-
-

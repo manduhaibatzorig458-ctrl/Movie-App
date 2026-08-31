@@ -24,9 +24,6 @@ export default function MovieDetails() {
   const [error, setError] = useState("");
   const [showTrailer, setShowTrailer] = useState(false);
 
-  // =========================
-  // GET MOVIE DETAILS
-  // =========================
   useEffect(() => {
     if (!id) return;
 
@@ -44,8 +41,7 @@ export default function MovieDetails() {
 
         if (!response.ok) {
           throw new Error(
-            data.status_message ||
-              `Failed to fetch movie: ${response.status}`,
+            data.status_message || `Failed to fetch movie: ${response.status}`,
           );
         }
 
@@ -54,9 +50,7 @@ export default function MovieDetails() {
         console.error("Movie error:", error);
 
         setError(
-          error instanceof Error
-            ? error.message
-            : "Something went wrong",
+          error instanceof Error ? error.message : "Something went wrong",
         );
       } finally {
         setLoading(false);
@@ -66,9 +60,7 @@ export default function MovieDetails() {
     getMovie();
   }, [id]);
 
-  // =========================
   // NAVIGATION
-  // =========================
   const goToMovie = (movieId) => {
     router.push(`/movie/${movieId}`);
   };
@@ -81,13 +73,11 @@ export default function MovieDetails() {
     router.push(`/genre/${genreId}`);
   };
 
-  // =========================
   // LOADING
-  // =========================
   if (loading) {
     return (
       <main className="min-h-screen bg-[#f8f8f8] dark:bg-[#111111]">
-        <section className="mx-auto w-full max-w-[1200px] px-4 pb-5 pt-7 md:px-8">
+        <section className="mx-auto w-full max-w-300 px-4 pb-5 pt-7 md:px-8">
           <div className="flex items-start justify-between">
             <div>
               <div className="h-8 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
@@ -99,26 +89,22 @@ export default function MovieDetails() {
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-[1200px] px-4 md:px-8">
+        <section className="mx-auto w-full max-w-300 px-4 md:px-8">
           <div className="flex gap-4 md:gap-5">
-            <div className="hidden h-[280px] w-[185px] shrink-0 animate-pulse rounded bg-gray-200 dark:bg-gray-800 md:block" />
+            <div className="hidden h-70 w-46.25 shrink-0 animate-pulse rounded bg-gray-200 dark:bg-gray-800 md:block" />
 
-            <div className="h-[280px] flex-1 animate-pulse rounded bg-gray-300 dark:bg-gray-800 md:h-[420px]" />
+            <div className="h-70 flex-1 animate-pulse rounded bg-gray-300 dark:bg-gray-800 md:h-105" />
           </div>
         </section>
       </main>
     );
   }
 
-  // =========================
   // ERROR
-  // =========================
   if (error) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center bg-[#f8f8f8] px-5 dark:bg-[#111111]">
-        <p className="mb-5 text-center text-red-500">
-          {error}
-        </p>
+        <p className="mb-5 text-center text-red-500">{error}</p>
 
         <button
           type="button"
@@ -134,9 +120,7 @@ export default function MovieDetails() {
   if (!movie) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center bg-[#f8f8f8] px-5 dark:bg-[#111111]">
-        <p className="mb-5 text-gray-500 dark:text-gray-400">
-          Movie not found
-        </p>
+        <p className="mb-5 text-gray-500 dark:text-gray-400">Movie not found</p>
 
         <button
           type="button"
@@ -149,41 +133,26 @@ export default function MovieDetails() {
     );
   }
 
-  // =========================
   // MOVIE INFORMATION
-  // =========================
-  const year = movie.release_date
-    ? movie.release_date.substring(0, 4)
-    : "N/A";
+  const year = movie.release_date ? movie.release_date.substring(0, 4) : "N/A";
 
-  const runtimeHours = movie.runtime
-    ? Math.floor(movie.runtime / 60)
-    : 0;
+  const runtimeHours = movie.runtime ? Math.floor(movie.runtime / 60) : 0;
 
-  const runtimeMinutes = movie.runtime
-    ? movie.runtime % 60
-    : 0;
+  const runtimeMinutes = movie.runtime ? movie.runtime % 60 : 0;
 
   const runtime =
-    movie.runtime > 0
-      ? `${runtimeHours}h ${runtimeMinutes}m`
-      : "N/A";
+    movie.runtime > 0 ? `${runtimeHours}h ${runtimeMinutes}m` : "N/A";
 
-  // =========================
   // CERTIFICATION
-  // =========================
   const usRelease = movie.release_dates?.results?.find(
     (country) => country.iso_3166_1 === "US",
   );
 
   const certification =
-    usRelease?.release_dates?.find(
-      (release) => release.certification,
-    )?.certification || "NR";
+    usRelease?.release_dates?.find((release) => release.certification)
+      ?.certification || "NR";
 
-  // =========================
   // TRAILER
-  // =========================
   const trailer =
     movie.videos?.results?.find(
       (video) =>
@@ -192,26 +161,18 @@ export default function MovieDetails() {
         video.official === true,
     ) ||
     movie.videos?.results?.find(
-      (video) =>
-        video.site === "YouTube" &&
-        video.type === "Trailer",
+      (video) => video.site === "YouTube" && video.type === "Trailer",
     ) ||
     movie.videos?.results?.find(
-      (video) =>
-        video.site === "YouTube" &&
-        video.type === "Teaser",
+      (video) => video.site === "YouTube" && video.type === "Teaser",
     );
 
-  // =========================
   // DIRECTOR
-  // =========================
   const director = movie.credits?.crew?.find(
     (person) => person.job === "Director",
   );
 
-  // =========================
   // WRITERS
-  // =========================
   const writers =
     movie.credits?.crew
       ?.filter(
@@ -222,22 +183,16 @@ export default function MovieDetails() {
       )
       ?.slice(0, 3) || [];
 
-  // =========================
   // STARS
-  // =========================
   const stars = movie.credits?.cast?.slice(0, 3) || [];
 
-  // =========================
   // RECOMMENDATIONS
-  // =========================
   const recommendations =
     movie.recommendations?.results
       ?.filter((item) => item.poster_path)
       ?.slice(0, 5) || [];
 
-  // =========================
   // VOTE COUNT
-  // =========================
   const voteCount = movie.vote_count
     ? movie.vote_count >= 1000
       ? `${(movie.vote_count / 1000).toFixed(0)}k`
@@ -246,11 +201,8 @@ export default function MovieDetails() {
 
   return (
     <main className="min-h-screen bg-[#f8f8f8] text-[#1f2937] transition-colors duration-300 dark:bg-[#111111] dark:text-white">
-
-      {/* =========================
-          TITLE + RATING
-      ========================= */}
-      <section className="mx-auto w-full max-w-[1200px] px-4 pb-5 pt-7 md:px-8">
+      {/*  TITLE + RATING */}
+      <section className="mx-auto w-full max-w-300 px-4 pb-5 pt-7 md:px-8">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <h1 className="text-[24px] font-bold md:text-[30px]">
@@ -277,9 +229,7 @@ export default function MovieDetails() {
             </p>
 
             <div className="flex items-center justify-end">
-              <span className="mr-1 text-[25px] text-yellow-400">
-                ★
-              </span>
+              <span className="mr-1 text-[25px] text-yellow-400">★</span>
 
               <span className="text-sm font-semibold">
                 {movie.vote_average?.toFixed(1) || "0.0"}
@@ -297,12 +247,9 @@ export default function MovieDetails() {
         </div>
       </section>
 
-      {/* =========================
-          DESKTOP:
-          POSTER + BACKDROP
-      ========================= */}
+      {/* DESKTOP:
+          POSTER + BACKDROP */}
       <section className="mx-auto hidden w-full max-w-300 gap-5 px-4 md:flex md:px-8">
-
         {/* POSTER */}
         <div className="relative h-100 w-70 shrink-0 overflow-hidden rounded-sm bg-gray-200 dark:bg-gray-800">
           {movie.poster_path ? (
@@ -349,18 +296,14 @@ export default function MovieDetails() {
                 ▶
               </span>
 
-              <span className="text-sm font-medium">
-                Play trailer
-              </span>
+              <span className="text-sm font-medium">Play trailer</span>
             </button>
           )}
         </div>
       </section>
 
-      {/* =========================
-          MOBILE BACKDROP
-      ========================= */}
-      <section className="relative h-[280px] w-full overflow-hidden bg-black md:hidden">
+      {/* MOBILE BACKDROP */}
+      <section className="relative h-70 w-full overflow-hidden bg-black md:hidden">
         {movie.backdrop_path ? (
           <Image
             src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
@@ -388,22 +331,16 @@ export default function MovieDetails() {
               ▶
             </span>
 
-            <span className="text-sm font-medium">
-              Play trailer
-            </span>
+            <span className="text-sm font-medium">Play trailer</span>
           </button>
         )}
       </section>
 
-      {/* =========================
-          CONTENT
-      ========================= */}
-      <section className="mx-auto w-full max-w-[1200px] px-4 py-6 md:px-8">
-
+      {/* CONTENT */}
+      <section className="mx-auto w-full max-w-300 px-4 py-6 md:px-8">
         {/* MOBILE: POSTER + INFO */}
         <div className="flex items-start gap-4 md:block">
-
-          <div className="relative h-[200px] w-[130px] shrink-0 overflow-hidden rounded-sm bg-gray-200 dark:bg-gray-800 md:hidden">
+          <div className="relative h-50 w-32.5 shrink-0 overflow-hidden rounded-sm bg-gray-200 dark:bg-gray-800 md:hidden">
             {movie.poster_path ? (
               <Image
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -419,8 +356,7 @@ export default function MovieDetails() {
             )}
           </div>
 
-          <div className="min-w-0 flex-1 md:max-w-[900px]">
-
+          <div className="min-w-0 flex-1 md:max-w-225">
             {/* GENRES */}
             {movie.genres?.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -438,17 +374,14 @@ export default function MovieDetails() {
             )}
 
             {/* OVERVIEW */}
-            <p className="mt-4 text-[13px] leading-6 text-gray-700 dark:text-gray-300 md:max-w-[850px] md:text-[15px]">
+            <p className="mt-4 text-[13px] leading-6 text-gray-700 dark:text-gray-300 md:max-w-212.5 md:text-[15px]">
               {movie.overview || "No overview available."}
             </p>
           </div>
         </div>
 
-        {/* =========================
-            DIRECTOR / WRITERS / STARS
-        ========================= */}
-        <section className="mt-6 max-w-[900px]">
-
+        {/* DIRECTOR / WRITERS / STARS */}
+        <section className="mt-6 max-w-225">
           <div className="grid grid-cols-[80px_1fr] border-b border-gray-300 py-4 dark:border-gray-700 md:grid-cols-[95px_1fr]">
             <span className="text-[13px] font-semibold md:text-sm">
               Director
@@ -480,9 +413,7 @@ export default function MovieDetails() {
           </div>
 
           <div className="grid grid-cols-[80px_1fr] border-b border-gray-300 py-4 dark:border-gray-700 md:grid-cols-[95px_1fr]">
-            <span className="text-[13px] font-semibold md:text-sm">
-              Stars
-            </span>
+            <span className="text-[13px] font-semibold md:text-sm">Stars</span>
 
             <span className="text-[13px] leading-5 text-gray-600 dark:text-gray-300 md:text-sm">
               {stars.length > 0
@@ -498,15 +429,11 @@ export default function MovieDetails() {
                 : "N/A"}
             </span>
           </div>
-
         </section>
 
-        {/* =========================
-            MORE LIKE THIS
-        ========================= */}
+        {/* MORE LIKE THIS */}
         {recommendations.length > 0 && (
           <section className="mt-8 pb-5">
-
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-[20px] font-bold md:text-[21px]">
                 More like this
@@ -532,7 +459,7 @@ export default function MovieDetails() {
                   onClick={() => goToMovie(item.id)}
                   className="overflow-hidden rounded-md bg-[#eeeeee] text-left transition hover:-translate-y-1 hover:shadow-md dark:bg-[#1e1e1e]"
                 >
-                  <div className="relative aspect-[2/3] overflow-hidden">
+                  <div className="relative aspect-2/3 overflow-hidden">
                     <Image
                       src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
                       alt={item.title || "Movie poster"}
@@ -544,9 +471,7 @@ export default function MovieDetails() {
 
                   <div className="p-2">
                     <div className="flex items-center gap-1">
-                      <span className="text-sm text-yellow-400">
-                        ★
-                      </span>
+                      <span className="text-sm text-yellow-400">★</span>
 
                       <span className="text-xs font-medium">
                         {item.vote_average?.toFixed(1) || "0.0"}
@@ -564,21 +489,18 @@ export default function MovieDetails() {
                 </button>
               ))}
             </div>
-
           </section>
         )}
       </section>
 
-      {/* =========================
-          TRAILER MODAL
-      ========================= */}
+      {/* TRIALER MODAL */}
       {showTrailer && trailer && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 px-4"
+          className="fixed inset-0 z-9999 flex items-center justify-center bg-black/70 px-4"
           onClick={() => setShowTrailer(false)}
         >
           <div
-            className="relative w-full max-w-[900px] overflow-hidden rounded-lg bg-black"
+            className="relative w-full max-w-225 overflow-hidden rounded-lg bg-black"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-center justify-between px-4 py-3">
